@@ -1,0 +1,339 @@
+- name: "[中英字幕]吴恩达机器学习系列课程_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili"
+  url: https://www.bilibili.com/video/av50747658/
+
+- name: "liuchuo (柳婼)"
+  url: https://github.com/liuchuo
+
+- name: "十大经典排序算法（动图演示）"
+  url: https://www.cnblogs.com/onepixel/articles/7674659.html
+
+- name: "一篇文章搞懂红黑树的原理及实现"
+  url: https://www.jianshu.com/p/37c845a5add6
+
+- name: "红黑树之删除节点"
+  url: https://www.cnblogs.com/qingergege/p/7351659.html
+
+- name: "一千行MySQL学习笔记"
+  url: http://www.cnblogs.com/shockerli/p/1000-plus-line-mysql-notes.html
+
+- name: "秒懂，Java 注解"
+  url: https://blog.csdn.net/briblue/article/details/73824058/
+
+- name: "Java中GC的工作原理"
+  url: https://www.cnblogs.com/cnmenglang/p/6229254.html
+
+- name: "Java NIO 系列教程"
+  url: http://www.iteye.com/magazines/132-Java-NIO
+
+- name: "Java NIO 内存映射文件 "
+  url: https://www.cnblogs.com/ixenos/p/5863921.html
+
+- name: "Java并发性和多线程介绍目录"
+  url: http://ifeve.com/java-concurrency-thread-directory/
+
+- name: "Java Concurrency and Multithreading Tutorial"
+  url: http://tutorials.jenkov.com/java-concurrency/index.html
+
+- name: "Java并发问题--乐观锁与悲观锁以及乐观锁的一种实现方式-CAS"
+  url: https://www.cnblogs.com/qjjazry/p/6581568.html
+
+- name: "IDEA新建javaWeb以及Servlet简单实现 - Faron"
+  url: https://www.cnblogs.com/printN/p/6537903.html
+
+- name: "IntelliJ IDEA配置Tomcat（完整版教程）"
+  url: https://www.cnblogs.com/Miracle-Maker/articles/6476687.html
+
+- name: "【Servlet】关于RequestDispatcher的原理"
+  url: https://www.cnblogs.com/lulipro/p/7471987.html
+
+- name: "nginx源码安装configure命令的参数介绍"
+  url: https://blog.csdn.net/gnail_oug/article/details/53230547
+
+- name: "Servlet 3.0 之 安全"
+  url: https://www.jianshu.com/p/16a628939299
+
+- name: "IDEA建立Spring MVC Hello World 详细入门教程"
+  url: https://www.cnblogs.com/wormday/p/8435617.html
+
+- name: "关于Spring IOC (DI-依赖注入)你需要知道的一切"
+  url: https://blog.csdn.net/javazejian/article/details/54561302
+
+- name: "SLF4J简介与使用(整合log4j) - Jiapeng的博客"
+  url: https://blog.csdn.net/jiapengcs/article/details/73359918
+
+- name: "通过Spring读取properties配置文件"
+  url: https://blog.csdn.net/yh_zeng2/article/details/76222905
+
+- name: "《数据结构-C语言版》（严蔚敏,吴伟民版）课本源码+习题集解析使用说明"
+  url: https://www.cnblogs.com/kangjianwei101/p/5221816.html
+
+- name: "浅析强连通分量（Tarjan和kosaraju）"
+  url: https://www.cnblogs.com/five20/p/7594239.html
+
+- name: "算法导论之矩阵链乘法详解"
+  url: https://blog.csdn.net/YiloPo/article/details/52832405
+
+- name: "数据结构4——并查集（入门）"
+  url: https://www.cnblogs.com/xzxl/p/7226557.html
+
+- name: "二叉树前序后序中序互推总结"
+  url: https://blog.csdn.net/fran_lee/article/details/78028589
+
+- name: "CentOS7 安装 mysql8"
+  url: https://blog.csdn.net/managementandjava/article/details/80039650
+
+- name: "centos7安装tengine强制使用HTTPS访问"
+  url: https://www.cnblogs.com/hukey/p/6368543.html?utm_source=itdadao&utm_medium=referral
+
+- name: "Spring、Spring MVC、MyBatis整合文件配置详解"
+  url: https://www.cnblogs.com/wxisme/p/4924561.html
+
+- name: "Spring+SpringMVc+Mybatis实现数据库查询"
+  url: https://www.cnblogs.com/wyq178/p/6815373.html
+
+- name: "(8条消息)Spring+SpringMVC+Mybatis简单易懂实例整合"
+  url: https://blog.csdn.net/qq_15009805/article/details/81872327
+
+- name: "Bootstrap-table 使用总结"
+  url: https://www.cnblogs.com/laowangc/p/8875526.html
+
+- name: "(8条消息)【第二篇】 搞定BootstrapTable（后端使用SpringMVC+Hibernate）"
+  url: https://blog.csdn.net/kkorkk/article/details/77899857
+
+- name: "(1条消息)AJAX发送 PUT和DELETE请求注意事项"
+  url: https://blog.csdn.net/liuyuanjiang109/article/details/78972644
+
+- name: "(1条消息)MockMVC使用总结"
+  url: https://blog.csdn.net/weixin_34228387/article/details/87500458
+
+- name: "MockMVC - 基于RESTful风格的SpringMVC的测试"
+  url: https://www.jianshu.com/p/91045b0415f0
+
+- name: "SpringBoot集成Mybatis(0配置注解版) - Ruthless - 博客园"
+  url: https://www.cnblogs.com/linjiqin/p/9686981.html
+
+- name: "mybatis generator的使用 - 君临-行者无界 - 博客园"
+  url: https://www.cnblogs.com/hhhshct/p/9331043.html
+
+- name: "SpringBoot入门篇--整合mybatis+generator自动生成代码+druid连接池+PageHelper分页插件 - GoNewLife - 博客园"
+  url: https://www.cnblogs.com/zslli/p/8779449.html
+
+- name: "Mybatis教程 | 第八篇：Mybatis的注解配置 - Zepal - CSDN博客"
+  url: https://blog.csdn.net/weixin_41381863/article/details/88076187
+
+- name: "mybatis基于注解开发 - weixin_43343131的博客 - CSDN博客"
+  url: https://blog.csdn.net/weixin_43343131/article/details/84786868
+
+- name: "redis最全配置讲解 - 米兔斯基 - 博客园"
+  url: https://www.cnblogs.com/metu/p/9609604.html
+
+- name: "Java中常见的对象类型简述(DO、BO、DTO、VO、AO、PO) - Sunrise的专栏"
+  url: https://blog.csdn.net/uestcyms/article/details/80244407
+
+- name: "Spring AOP的应用--检测当前登录用户 - all_that的博客"
+  url: https://blog.csdn.net/all_that/article/details/89677437
+
+- name: "Spring AOP 实现功能权限校验功能 - Study_Work - 博客园"
+  url: https://www.cnblogs.com/yhtboke/p/5749063.html
+
+- name: "vue.js+iview+springboot搭建一个前后端分离登陆demo - 简书"
+  url: https://www.jianshu.com/p/bbc455d86a22
+
+- name: "springmvc 使用map和requestparam注解接受参数时 后台和fillder的写法 - Honins的博客"
+  url: https://blog.csdn.net/honnyee/article/details/80651898
+
+- name: "代码生成器 | MyBatis-Plus"
+  url: https://mp.baomidou.com/guide/generator.html#%E4%BD%BF%E7%94%A8%E6%95%99%E7%A8%8B
+
+- name: "easy-table-vue+VueJs、SpringBoot+Mybatis实现MVVM模型前后台数据交互 - 不若为止 - 博客园"
+  url: https://www.cnblogs.com/wlovet/p/10980579.html
+
+- name: "Spring cloud oauth2 研究--第一个DEMO - 简书"
+  url: https://www.jianshu.com/p/1405fc42c428
+
+- name: "理解OAuth 2.0 - 阮一峰的网络日志"
+  url: http://www.ruanyifeng.com/blog/2014/05/oauth_2_0.html
+
+- name: "Spring Boot 使用 Redis 进行 Session 共享（子域使用 Cookie 共享 Session）_SpringBoot,Session,Cookie_徐晓伟的博客-CSDN博客"
+  url: https://blog.csdn.net/qq_32596527/article/details/89260452
+
+- name: "史上最全的Spring Boot Cache使用与整合 - 薛勤 - 博客园"
+  url: https://www.cnblogs.com/yueshutong/p/9381540.html#
+
+- name: "spring boot redis 子域 session共享_yong472727322的博客-CSDN博客"
+  url: https://blog.csdn.net/yong472727322/article/details/79115168
+
+- name: "com.alibaba.fastjson.JSONObject之对象与JSON转换方法 - 为何不是梦 - 博客园"
+  url: https://www.cnblogs.com/ibigboy/p/11124524.html
+
+- name: "Spring使用@Async注解 - 无涯Ⅱ - 博客园"
+  url: https://www.cnblogs.com/wlandwl/p/async.html
+
+- name: "Developer's Guide  |  reCAPTCHA  |  Google Developers"
+  url: https://developers.google.cn/recaptcha/intro?hl=zh-cn
+
+- name: "国内使用reCaptcha验证码的完整教程 - 斐斐のBlog"
+  url: https://www.mmuaa.com/post/a0dc4687b47a53a7.html
+
+- name: "reCaptcha 新版，国内可无障碍使用 - mouseleo - 博客园"
+  url: https://www.cnblogs.com/mouseleo/p/11896410.html
+
+- name: "使用Google reCAPTCHA防止机器注册_小坚的技术博客-CSDN博客"
+  url: https://blog.csdn.net/C_jian/article/details/84191095
+
+- name: "(2条消息)idea自动部署springboot jar包到远程服务器并通过脚本启动jar_编程是一门艺术-CSDN博客"
+  url: https://blog.csdn.net/u013818374/article/details/84144268
+
+- name: "参考文档 · Docker —— 从入门到实践"
+  url: https://yeasy.gitbooks.io/docker_practice/image/dockerfile/references.html
+
+- name: "使用Docker搭建MySQL服务 - sablier - 博客园"
+  url: https://www.cnblogs.com/sablier/p/11605606.html
+
+- name: "基于docker搭建个人博客jpress - 简书"
+  url: https://www.jianshu.com/p/e44f13564b63/
+
+- name: "docker 配置redis - 简书"
+  url: https://www.jianshu.com/p/b3b5f747c6ba
+
+- name: "(2条消息)使用Zuul聚合微服务_Java_实践求真知-CSDN博客"
+  url: https://blog.csdn.net/chengqiuming/article/details/80860981
+
+- name: "(2条消息)Java 比较两个字符串的相似度算法（Levenshtein Distance）_Java_知其然-CSDN博客"
+  url: https://blog.csdn.net/JavaReact/article/details/82144732
+
+- name: "(2条消息)google-diff-match-patch使用说明_Java_等待就是浪费青春-CSDN博客"
+  url: https://blog.csdn.net/codetomylaw/article/details/52872065
+
+- name: "(2条消息)java比较两个文本的相似度_Java_wuxiaojun的专栏-CSDN博客"
+  url: https://blog.csdn.net/wuxiaojun000000/article/details/79241430
+
+- name: "(2条消息)使用 CodeMirror 打造在线代码编辑器_Python_mxh的博客-CSDN博客"
+  url: https://blog.csdn.net/qq_37193537/article/details/88426196
+
+- name: "Bootstrap 4 自定义文件上传插件-创客云"
+  url: https://www.22vd.com/35107.html
+
+- name: "java IO、NIO、AIO详解 - StoneGeek - 博客园"
+  url: https://www.cnblogs.com/sxkgeek/p/9488703.html
+
+- name: "(2条消息)最大子序列和（动态规划）_C/C++_memory_cood的博客-CSDN博客"
+  url: https://blog.csdn.net/memory_cood/article/details/88414601?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task
+
+- name: "(2条消息)[C++]蓝桥杯ADV-16. 和最大子序列_C/C++_明月寄天涯的博客-CSDN博客"
+  url: https://blog.csdn.net/qq_43356428/article/details/104873026
+
+- name: "HttpClient使用总结 - 星朝 - 博客园"
+  url: https://www.cnblogs.com/jpfss/p/9289187.html
+
+- name: "(2条消息)N皇后问题-回溯与递归-C++实现_C/C++_qq_38063665的博客-CSDN博客"
+  url: https://blog.csdn.net/qq_38063665/article/details/79629652
+
+- name: "B+树总结 - 简书"
+  url: https://www.jianshu.com/p/71700a464e97
+
+- name: "30张图带你彻底理解红黑树 - 简书"
+  url: https://www.jianshu.com/p/e136ec79235c
+
+- name: "例子讲解Springboot注解@EnableXXX如何工作_Java_Details Inside Spring-CSDN博客"
+  url: https://blog.csdn.net/andy_zhang2007/article/details/83957588
+
+- name: "Spring Cloud Config 实现配置中心，看这一篇就够了 - 风的姿态 - 博客园"
+  url: https://www.cnblogs.com/fengzheng/p/11242128.html
+
+- name: "Jackson使用指南"
+  url: https://juejin.im/post/6844903766915809287
+
+- name: "Centos7安装搭建FTP服务器（最简便方法） - Tse先生 - 博客园"
+  url: https://www.cnblogs.com/Sungeek/p/10148656.html
+
+- name: "Redis详解（二）------ redis的配置文件介绍 - YSOcean - 博客园"
+  url: https://www.cnblogs.com/ysocean/p/9074787.html
+
+- name: "java进阶教程2天快速入门Spring Security OAuth2.0认证授权_哔哩哔哩 (゜-゜)つロ 干杯~-bilibili"
+  url: https://www.bilibili.com/video/BV1VE411h7aL?p=15
+
+- name: "mybatis中各种数据的映射类型 - 异或随心 - 博客园"
+  url: https://www.cnblogs.com/zhuangfei/p/9492915.html
+
+- name: "mybatis解析和基本运行原理 - xuanm - 博客园"
+  url: https://www.cnblogs.com/grasp/p/11161176.html
+
+- name: "(29条消息) JAVA9 String新特性，说说你不知道的东西_人在江湖-CSDN博客"
+  url: https://blog.csdn.net/qq_41376740/article/details/80143215
+
+- name: "(29条消息) Java 字符串常量池到底是在PermGen方法区、是在heap堆里面、还是在Metaspace 元空间里面呢？_请叫我大师兄-CSDN博客"
+  url: https://blog.csdn.net/qq_27093465/article/details/106767042
+
+- name: "(29条消息) Java 关于强引用，软引用，弱引用和虚引用的区别与用法_不远远方-CSDN博客_强引用,软引用和弱引用的区别"
+  url: https://blog.csdn.net/junjunba2689/article/details/80601729
+
+- name: "JVM监控及故障排查 - 留白 - OSCHINA - 中文开源技术交流社区"
+  url: https://my.oschina.net/codingcloud/blog/4939355
+
+- name: "JVM调优——之CMS GC日志分析 - babyblue - 博客园"
+  url: https://www.cnblogs.com/onmyway20xx/p/6590603.html
+
+- name: "Java反射-修改字段值, 反射修改static final修饰的字段 - GoldArowana - 博客园"
+  url: https://www.cnblogs.com/noKing/p/9038234.html
+
+- name: "Java JVM 栈帧（Stack Frame） - 江湖小小白 - 博客园"
+  url: https://www.cnblogs.com/jhxxb/p/11001238.html
+
+- name: "分类: 集合框架 | 田小波的技术博客"
+  url: https://www.tianxiaobo.com/categories/foundation-of-java/collection/
+
+- name: "(29条消息) java 通过Unsafe不使用构造器直接创建对象_weixin_33806300的博客-CSDN博客"
+  url: https://blog.csdn.net/weixin_33806300/article/details/91919272
+
+- name: "Spring Bean的生命周期（非常详细） - Chandler Qian - 博客园"
+  url: https://www.cnblogs.com/zrtqsk/p/3735273.html
+
+- name: "Spring事务传播行为详解 - SegmentFault 思否"
+  url: https://segmentfault.com/a/1190000013341344
+
+- name: "淘宝一面：“说一下 Spring Boot 自动装配原理呗？” - JavaGuide - 博客园"
+  url: https://www.cnblogs.com/javaguide/p/springboot-auto-config.html
+
+- name: "太难了~面试官让我结合案例讲讲自己对Spring事务传播行为的理解。"
+  url: https://mp.weixin.qq.com/s?__biz=Mzg2OTA0Njk0OA==&mid=2247486668&idx=2&sn=0381e8c836442f46bdc5367170234abb&chksm=cea24307f9d5ca11c96943b3ccfa1fc70dc97dd87d9c540388581f8fe6d805ff548dff5f6b5b&token=1776990505&lang=zh_CN#rd
+
+- name: "Java虚拟机—栈帧、操作数栈和局部变量表 - 知乎"
+  url: https://zhuanlan.zhihu.com/p/45354152
+
+- name: "(31条消息) Spring源码解析：BeanFactory深入理解_FromNowOnUntilTheEnd-CSDN博客_beanfactory"
+  url: https://blog.csdn.net/qq_36688143/article/details/84968036
+
+- name: "(31条消息) Spring系列之FactoryBean（一）_努力改变人生！-CSDN博客_factorybean"
+  url: https://blog.csdn.net/zknxx/article/details/79572387
+
+- name: "(34条消息) java对象头信息_zhaocuit的博客-CSDN博客_java 对象头"
+  url: https://blog.csdn.net/zhaocuit/article/details/100208879
+
+- name: "(34条消息) Java中锁的四种状态以及锁升级过程_旧时明月丶-CSDN博客"
+  url: https://blog.csdn.net/weixin_42105936/article/details/109608345
+
+- name: "JUC - 类汇总和学习指南 | Java 全栈知识体系"
+  url: https://www.pdai.tech/md/java/thread/java-thread-x-juc-overview.html
+
+- name: "浅谈偏向锁、轻量级锁、重量级锁 - 简书"
+  url: https://www.jianshu.com/p/36eedeb3f912
+
+- name: "(35条消息) AQS学习笔记_yiqzq的博客-CSDN博客"
+  url: https://blog.csdn.net/yiqzq/article/details/105027963
+
+- name: "Java并发之AQS详解 - waterystone - 博客园"
+  url: https://www.cnblogs.com/waterystone/p/4920797.html
+
+- name: "ConcurrentHashMap1.7源码分析_KLordy的博客-CSDN博客_concurrenthashmap1.7"
+  url: https://blog.csdn.net/klordy_123/article/details/82933115
+
+- name: "Data Structure Visualization"
+  url: https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
+
+- name: "(36条消息) Java并发编程之ConcurrentLinkedQueue详解_Stay Hungry, Stay Foolish-CSDN博客_concurrentlinkedqueue"
+  url: https://blog.csdn.net/qq_38293564/article/details/80798310
+
+- name: "MySQL explain，Extra分析（转）"
+  url: https://www.cnblogs.com/myseries/p/11262054.html
+
