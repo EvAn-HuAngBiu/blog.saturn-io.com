@@ -67,17 +67,17 @@ private transient volatile int sizeCtl;
 ## 构造函数
 
 ```java
-    public ConcurrentHashMap(int initialCapacity,
-                             float loadFactor, int concurrencyLevel) {
+public ConcurrentHashMap(int initialCapacity, 
+    float loadFactor, int concurrencyLevel) {
         if (!(loadFactor > 0.0f) || initialCapacity < 0 || concurrencyLevel <= 0)
             throw new IllegalArgumentException();
         if (initialCapacity < concurrencyLevel)   // Use at least as many bins
             initialCapacity = concurrencyLevel;   // as estimated threads
         long size = (long)(1.0 + (long)initialCapacity / loadFactor);
-        int cap = (size >= (long)MAXIMUM_CAPACITY) ?
-            MAXIMUM_CAPACITY : tableSizeFor((int)size);
+        int cap = (size >= (long)MAXIMUM_CAPACITY) ? 
+                    MAXIMUM_CAPACITY : tableSizeFor((int)size);
         this.sizeCtl = cap;
-    }
+}
 ```
 
 
@@ -92,105 +92,101 @@ public V put(K key, V value) {
    return putVal(key, value, false);
 }
 
-    // 同时支持put和putIfAbsent方法
-    final V putVal(K key, V value, boolean onlyIfAbsent) {
-      	// 不允许插入空值和空键
-        if (key == null || value == null) throw new NullPointerException();
-        int hash = spread(key.hashCode());
-      	// 计算当前链表的长度，用来后续辅助判断是否需要树化
-        int binCount = 0;
-        for (Node<K,V>[] tab = table;;) {
-            Node<K,V> f; int n, i, fh; K fk; V fv;
-            if (tab == null || (n = tab.length) == 0)
-              	// 如果当前table为空那么先进行初始化，然后接着循环判断
-                tab = initTable();
-          
-          	// f幅值为table数组中当前键对应下标位置上的Node，如果这个Node为空说明当前桶是空的，直接尝试CAS赋值即可
-            else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
-                if (casTabAt(tab, i, null, new Node<K,V>(hash, key, value)))
-                  	// 如果CAS赋值成功则退出循环，插入结束
-                  	// 如果CAS赋值失败说明存在竞争，那么重新循环判断当前桶是否还是空的，如果还是则继续尝试CAS，否则执行下面的插入过程
-                    break;                   // no lock when adding to empty bin
-            }
-          
-          	// fh是当前节点的hash值
-            else if ((fh = f.hash) == MOVED)
-              	// 如果当前节点hash值为保留值MOVED（-1）那么说明table正在扩容，这里调用辅助扩容函数更新table
-                tab = helpTransfer(tab, f);
-          
-            else if (onlyIfAbsent // check first node without acquiring lock
-                     && fh == hash
-                     && ((fk = f.key) == key || (fk != null && key.equals(fk)))
-                     && (fv = f.val) != null)
-              	// 这里是一个快速检查，如果对于那些不允许覆盖的操作，当检查到桶的头结点的键和待插入的键一致的话直接返回原值即可不需要插入
-                // 这是一种快速失败的优化
-                return fv;
-          
-            else {
-              	// 到这里说明，f是当前桶的头结点并且不为空，也尚未被扩容，同时在不可覆盖模式下头结点和待插入节点的键不一致需要向后查找
-              	// 也就是说明会有几种情况：
-                // 1. 允许覆盖的情况下，并且头结点是链表节点的话，需要遍历链表查找是否有相同的键，如果有则覆盖
-              	// 2. 如果没有相同的键则插入到最后，同时要计算链表长度考虑是否要树化
-                // 3. 如果头结点是树节点的话，则调用红黑树方法查找
-                // 4. 不允许覆盖的情况同理，可以直接从第二个节点开始查找
-                V oldVal = null;
-                synchronized (f) {
-                  	// 获取头结点的锁，保证当前头结点是不被其它节点修改的
-                    if (tabAt(tab, i) == f) {
-                      	// 进行再次检查，查看当前头结点是否发生改变，比如等待锁的过程中当前链表发生了删除等操作，需要重新判断
-                      	// 如果当前头结点和之前记录的不一致的话，就放弃锁重新进行循环判断插入位置
-                        if (fh >= 0) {
-                          	// 头节点hash值大于0表示是链表节点，那么记录链表长度
-                            binCount = 1;
-                          	// 遍历即可，如果有相同键则替换，否则插入到最后，同时要更新链表长度binCount
-                          	// 只要插入成功会立刻break，退出循环
-                            for (Node<K,V> e = f;; ++binCount) {
-                                K ek;
-                                if (e.hash == hash &&
-                                    ((ek = e.key) == key ||
-                                     (ek != null && key.equals(ek)))) {
-                                    oldVal = e.val;
-                                    if (!onlyIfAbsent)
-                                        e.val = value;
-                                    break;
-                                }
-                                Node<K,V> pred = e;
-                                if ((e = e.next) == null) {
-                                    pred.next = new Node<K,V>(hash, key, value);
-                                    break;
-                                }
-                            }
-                        }
-                        else if (f instanceof TreeBin) {
-                          	// 如果是红黑树，则调用红黑树的方法插入（fh == -2）
-                            Node<K,V> p;
-                            binCount = 2;
-                            if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
-                                                           value)) != null) {
-                                oldVal = p.val;
-                                if (!onlyIfAbsent)
-                                    p.val = value;
-                            }
-                        }
-                        else if (f instanceof ReservationNode)
-                          	// 最后一种循环的情况（fh == -3）
-                            throw new IllegalStateException("Recursive update");
-                    }
-                }
-                if (binCount != 0) {
-                  	// 如果当前计数值大于阈值的话考虑是否要树化（不一定树化，树化的条件是大于等于阈值64），
-                    // 但是这里的阈值是8，也就是说在链表长度大于8并且小于64的时候会先尝试将数组大小翻倍而不是树化
-                    if (binCount >= TREEIFY_THRESHOLD)
-                        treeifyBin(tab, i);
-                    if (oldVal != null)
-                        return oldVal;
-                    break;
-                }
-            }
-        }
-        addCount(1L, binCount);
-        return null;
-    }
+// 同时支持put和putIfAbsent方法
+final V putVal(K key, V value, boolean onlyIfAbsent) {
+  // 不允许插入空值和空键
+  if (key == null || value == null) throw new NullPointerException();
+  int hash = spread(key.hashCode());
+  // 计算当前链表的长度，用来后续辅助判断是否需要树化
+  int binCount = 0;
+  for (Node<K,V>[] tab = table;;) {
+      Node<K,V> f; int n, i, fh; K fk; V fv;
+      if (tab == null || (n = tab.length) == 0)
+          // 如果当前table为空那么先进行初始化，然后接着循环判断
+          tab = initTable();
+      // f幅值为table数组中当前键对应下标位置上的Node，如果这个Node为空说明当前桶是空的，直接尝试CAS赋值即可
+      else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
+          if (casTabAt(tab, i, null, new Node<K,V>(hash, key, value)))
+              // 如果CAS赋值成功则退出循环，插入结束
+              // 如果CAS赋值失败说明存在竞争，那么重新循环判断当前桶是否还是空的，如果还是则继续尝试CAS，否则执行下面的插入过程
+              break;                   // no lock when adding to empty bin
+      }
+      // fh是当前节点的hash值
+      else if ((fh = f.hash) == MOVED)
+          // 如果当前节点hash值为保留值MOVED（-1）那么说明table正在扩容，这里调用辅助扩容函数更新table
+          tab = helpTransfer(tab, f);
+      else if (onlyIfAbsent // check first node without acquiring lock
+               && fh == hash
+               && ((fk = f.key) == key || (fk != null && key.equals(fk)))
+               && (fv = f.val) != null)
+            // 这里是一个快速检查，如果对于那些不允许覆盖的操作，当检查到桶的头结点的键和待插入的键一致的话直接返回原值即可不需要插入
+          // 这是一种快速失败的优化
+          return fv;
+      else {
+          // 到这里说明，f是当前桶的头结点并且不为空，也尚未被扩容，同时在不可覆盖模式下头结点和待插入节点的键不一致需要向后查找
+          // 也就是说明会有几种情况：
+          // 1. 允许覆盖的情况下，并且头结点是链表节点的话，需要遍历链表查找是否有相同的键，如果有则覆盖
+          // 2. 如果没有相同的键则插入到最后，同时要计算链表长度考虑是否要树化
+          // 3. 如果头结点是树节点的话，则调用红黑树方法查找
+          // 4. 不允许覆盖的情况同理，可以直接从第二个节点开始查找
+          V oldVal = null;
+          synchronized (f) {
+              // 获取头结点的锁，保证当前头结点是不被其它节点修改的
+              if (tabAt(tab, i) == f) {
+                  // 进行再次检查，查看当前头结点是否发生改变，比如等待锁的过程中当前链表发生了删除等操作，需要重新判断
+                  // 如果当前头结点和之前记录的不一致的话，就放弃锁重新进行循环判断插入位置
+                  if (fh >= 0) {
+                      // 头节点hash值大于0表示是链表节点，那么记录链表长度
+                      binCount = 1;
+                      // 遍历即可，如果有相同键则替换，否则插入到最后，同时要更新链表长度binCount
+                      // 只要插入成功会立刻break，退出循环
+                      for (Node<K,V> e = f;; ++binCount) {
+                          K ek;
+                          if (e.hash == hash &&
+                              ((ek = e.key) == key ||
+                               (ek != null && key.equals(ek)))) {
+                              oldVal = e.val;
+                              if (!onlyIfAbsent)
+                                  e.val = value;
+                              break;
+                          }
+                          Node<K,V> pred = e;
+                          if ((e = e.next) == null) {
+                              pred.next = new Node<K,V>(hash, key, value);
+                              break;
+                          }
+                      }
+                  }
+                  else if (f instanceof TreeBin) {
+                      // 如果是红黑树，则调用红黑树的方法插入（fh == -2）
+                      Node<K,V> p;
+                      binCount = 2;
+                      if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
+                                                     value)) != null) {
+                          oldVal = p.val;
+                          if (!onlyIfAbsent)
+                              p.val = value;
+                      }
+                  }
+                  else if (f instanceof ReservationNode)
+                      // 最后一种循环的情况（fh == -3）
+                      throw new IllegalStateException("Recursive update");
+              }
+          }
+          if (binCount != 0) {
+              // 如果当前计数值大于阈值的话考虑是否要树化（不一定树化，树化的条件是大于等于阈值64），
+              // 但是这里的阈值是8，也就是说在链表长度大于8并且小于64的时候会先尝试将数组大小翻倍而不是树化
+              if (binCount >= TREEIFY_THRESHOLD)
+                  treeifyBin(tab, i);
+              if (oldVal != null)
+                  return oldVal;
+              break;
+          }
+      }
+  }
+  addCount(1L, binCount);
+  return null;
+}
 ```
 
 ## initTable
@@ -198,39 +194,39 @@ public V put(K key, V value) {
 initTable是table的初始化方法，它只发生在当前table尚未被初始化即（table == null 或 table.length == 0）时，并且利用CAS操作和sizeCtl变量来保证并发安全。当table尚未被初始化时sizeCtl为0，在初始化过程中尝试使用CAS来将sizeCtl设置为-1表示当前线程开始了初始化操作，其它线程等待即可；而其它线程在判断sizeCtl=-1时会让出时间片，或者CAS失败后会重新循环判断，源码如下：
 
 ```java
-		private final Node<K,V>[] initTable() {
-        Node<K,V>[] tab; int sc;
-      	// 如果table没有被初始化会一直循环，但是如果初始化成功那么就会自动退出
-        while ((tab = table) == null || tab.length == 0) {
-            if ((sc = sizeCtl) < 0)
-              	// sizeCtl小于0表示其它线程正在初始化，所以当前线程让出时间片等待即可
-                Thread.yield(); // lost initialization race; just spin
-          	// 尝试使用CAS获取锁，这个锁就是指将sizeCtl设置为-1，当尚未初始化时sizeCtl为0，此时CAS可能成功（如果没有竞争或成功抢到）
-            else if (U.compareAndSetInt(this, SIZECTL, sc, -1)) {
-                try {
-                  	// 再次检查，防止table被初始化了（有可能初始化后其它线程进入while循环，此时获取的sizeCtl为正数，表示已经初始化的table的容量的阈值
-                  	// 这样也能通过上面的CAS判断进入到这里，所以这里再次判断table为空才能进行初始化
-                    if ((tab = table) == null || tab.length == 0) {
-                      	// 如果sc=0，说明还未初始化，那么初始化为默认容量16
-                      	// 否则如果指定了容量空间，那么初始化为指定的容量空间
-                      	// 正是由于sizeCtl可能在前面表示初始空间的含义，所以这里需要判断table是否为null以及table长度是否为0来判空
-                        int n = (sc > 0) ? sc : DEFAULT_CAPACITY;
-                        @SuppressWarnings("unchecked")
-                        Node<K,V>[] nt = (Node<K,V>[])new Node<?,?>[n];
-                        table = tab = nt;
-                      	// 新的sizeCtl，实际上就是容量的0.75倍，和默认loadFactor一致
-                      	// 实际上我认为，即使构造函数中允许传入loadFactor参数，但是在构造函数实现时（JDK11），这个loadFactor只是用来标记
-                      	// 初始情况下的容量，而对于中间链表满的判断还是根据0.75的阈值来进行判断的，sizeCtl存储的实际上就是当前的阈值
-                        sc = n - (n >>> 2);
-                    }
-                } finally {
-                    sizeCtl = sc;
+private final Node<K,V>[] initTable() {
+    Node<K,V>[] tab; int sc;
+    // 如果table没有被初始化会一直循环，但是如果初始化成功那么就会自动退出
+    while ((tab = table) == null || tab.length == 0) {
+        if ((sc = sizeCtl) < 0)
+            // sizeCtl小于0表示其它线程正在初始化，所以当前线程让出时间片等待即可
+            Thread.yield(); // lost initialization race; just spin
+        // 尝试使用CAS获取锁，这个锁就是指将sizeCtl设置为-1，当尚未初始化时sizeCtl为0，此时CAS可能成功（如果没有竞争或成功抢到）
+        else if (U.compareAndSetInt(this, SIZECTL, sc, -1)) {
+            try {
+                // 再次检查，防止table被初始化了（有可能初始化后其它线程进入while循环，此时获取的sizeCtl为正数，表示已经初始化的table的容量的阈值
+                // 这样也能通过上面的CAS判断进入到这里，所以这里再次判断table为空才能进行初始化
+                if ((tab = table) == null || tab.length == 0) {
+                    // 如果sc=0，说明还未初始化，那么初始化为默认容量16
+                    // 否则如果指定了容量空间，那么初始化为指定的容量空间
+                    // 正是由于sizeCtl可能在前面表示初始空间的含义，所以这里需要判断table是否为null以及table长度是否为0来判空
+                    int n = (sc > 0) ? sc : DEFAULT_CAPACITY;
+                    @SuppressWarnings("unchecked")
+                    Node<K,V>[] nt = (Node<K,V>[])new Node<?,?>[n];
+                    table = tab = nt;
+                    // 新的sizeCtl，实际上就是容量的0.75倍，和默认loadFactor一致
+                    // 实际上我认为，即使构造函数中允许传入loadFactor参数，但是在构造函数实现时（JDK11），这个loadFactor只是用来标记
+                    // 初始情况下的容量，而对于中间链表满的判断还是根据0.75的阈值来进行判断的，sizeCtl存储的实际上就是当前的阈值
+                    sc = n - (n >>> 2);
                 }
-                break;
+            } finally {
+                sizeCtl = sc;
             }
+            break;
         }
-        return tab;
     }
+    return tab;
+}
 ```
 
 ## treeifyBin

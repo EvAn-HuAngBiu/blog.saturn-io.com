@@ -18,37 +18,38 @@ ConcurrentHashMap在Java1.7及之前版本是通过Segment+HashEntry数组（桶
 HashEntry是ConcurrentHashMap的最小存储单元，它包括四个字段：hash、key、value和next指针，需要注意的是这个类它大多数使用Unsafe类提供的放来设置属性值。源码如下：
 
 ```java
-static final class HashEntry<K,V> {
-    final int hash;
-    final K key;
-    volatile V value;
-    volatile HashEntry<K,V> next;
+static final class HashEntry<K, V> {
+  final int hash;
+  final K key;
+  volatile V value;
+  volatile HashEntry<K, V> next;
 
-    HashEntry(int hash, K key, V value, HashEntry<K,V> next) {
-        this.hash = hash;
-        this.key = key;
-        this.value = value;
-        this.next = next;
-    }
+  HashEntry(int hash, K key, V value, HashEntry<K, V> next) {
+    this.hash = hash;
+    this.key = key;
+    this.value = value;
+    this.next = next;
+  }
 
-    final void setNext(HashEntry<K,V> n) {
-        // 使用Unsafe类，根据next属性在内存中的偏移地址来设置值
-        UNSAFE.putOrderedObject(this, nextOffset, n);
-    }
+  final void setNext(HashEntry<K, V> n) {
+    // 使用Unsafe类，根据next属性在内存中的偏移地址来设置值
+    UNSAFE.putOrderedObject(this, nextOffset, n);
+  }
 
-    static final sun.misc.Unsafe UNSAFE;
-    static final long nextOffset;
-    static {
-         try {
-            UNSAFE = sun.misc.Unsafe.getUnsafe();
-            Class k = HashEntry.class;
-            // 获取next属性在内存中的偏移地址
-            nextOffset = UNSAFE.objectFieldOffset(k.getDeclaredField("next"));
-            } catch (Exception e) {
-                throw new Error(e);
-            }
-        }
+  static final sun.misc.Unsafe UNSAFE;
+  static final long nextOffset;
+
+  static {
+    try {
+      UNSAFE = sun.misc.Unsafe.getUnsafe();
+      Class k = HashEntry.class;
+      // 获取next属性在内存中的偏移地址
+      nextOffset = UNSAFE.objectFieldOffset(k.getDeclaredField("next"));
+    } catch (Exception e) {
+      throw new Error(e);
     }
+  }
+}
 ```
 
 ## Segment
@@ -201,46 +202,45 @@ final V put(K key, int hash, V value, boolean onlyIfAbsent) {
 remove操作的原理并不复杂，下面来看源码：
 
 ```java
-		final V remove(Object key, int hash, Object value) {
-      			// remove操作必须加锁
-            if (!tryLock())
-                scanAndLock(key, hash);
-            V oldValue = null;
-            try {
-                HashEntry<K,V>[] tab = table;
-                int index = (tab.length - 1) & hash;
-                // 获取key下标对应Entry的首个节点e
-                HashEntry<K,V> e = entryAt(tab, index);
-                HashEntry<K,V> pred = null;
-                while (e != null) {
-                    K k;
-                    HashEntry<K,V> next = e.next;
-                  	// 这里要求key和value值都命中才算找到了对应节点
-                    if ((k = e.key) == key ||
-                        (e.hash == hash && key.equals(k))) {
-                        V v = e.value;
-                        if (value == null || value == v || value.equals(v)) {
-                          	// 这里的pred就是当前节点的前一个节点（这里就是链表节点的删除）
-                            // 如果删除的是首节点，那么就把下一个节点设置为新的首节点
-                            if (pred == null)
-                                setEntryAt(tab, index, next);
-                            else
-                            // 反之就把前一个节点直接链接到下一个节点（就是链表删除）
-                                pred.setNext(next);
-                            ++modCount;
-                            --count;
-                            oldValue = v;
-                        }
-                        break;
-                    }
-                    pred = e;
-                    e = next;
+final V remove(Object key, int hash, Object value) {
+    // remove操作必须加锁
+    if (!tryLock())
+        scanAndLock(key, hash);
+    V oldValue = null;
+    try {
+        HashEntry<K,V>[] tab = table;
+        int index = (tab.length - 1) & hash;
+        // 获取key下标对应Entry的首个节点e
+        HashEntry<K,V> e = entryAt(tab, index);
+        HashEntry<K,V> pred = null;
+        while (e != null) {
+            K k;
+            HashEntry<K,V> next = e.next;
+            // 这里要求key和value值都命中才算找到了对应节点
+            if ((k = e.key) == key || (e.hash == hash && key.equals(k))) {
+                V v = e.value;
+                if (value == null || value == v || value.equals(v)) {
+                    // 这里的pred就是当前节点的前一个节点（这里就是链表节点的删除）
+                    // 如果删除的是首节点，那么就把下一个节点设置为新的首节点
+                    if (pred == null)
+                        setEntryAt(tab, index, next);
+                    else
+                        // 反之就把前一个节点直接链接到下一个节点（就是链表删除）
+                        pred.setNext(next);
+                    ++modCount;
+                    --count;
+                    oldValue = v;
                 }
-            } finally {
-                unlock();
+                break;
             }
-            return oldValue;
+            pred = e;
+            e = next;
         }
+    } finally {
+        unlock();
+    }
+    return oldValue;
+}
 ```
 
 
@@ -250,58 +250,58 @@ remove操作的原理并不复杂，下面来看源码：
 扩容函数，将Segment中HashEntry的数组容量扩大至原来的2倍
 
 ```java
-		private void rehash(HashEntry<K,V> node) {
-            HashEntry<K,V>[] oldTable = table;
-            int oldCapacity = oldTable.length;
-            // 新容量是原来的2倍
-            int newCapacity = oldCapacity << 1;
-            threshold = (int)(newCapacity * loadFactor);
-            HashEntry<K,V>[] newTable =
-                (HashEntry<K,V>[]) new HashEntry[newCapacity];
-            int sizeMask = newCapacity - 1;
-            for (int i = 0; i < oldCapacity ; i++) {
-                HashEntry<K,V> e = oldTable[i];
-                if (e != null) {
-                    HashEntry<K,V> next = e.next;
-                    // 计算当前节点在新数组中的下标
-                    int idx = e.hash & sizeMask;
-                    if (next == null)   //  处理链表只有一个节点的情况
-                        newTable[idx] = e;
-                    else { // Reuse consecutive sequence at same slot
-                        HashEntry<K,V> lastRun = e;
-                        // 这里先试图寻找一些在新数组中位置不发生变化的节点，lastIdx变量保存不发生变化的第一个节点的下标
-                        // 这里的原理和HashMap一致，举个例子假设HashEntry数组容量为16，那么下标为7的链表中可能包含hash值为7、14、21、28、35、42等
-                        // 节点，当这个HashEntry数组被扩容到32时，显然hash值为14、21、28的节点会被放置到新位置上，而hash值为35、42、49的节点则
-                        // 不发生任何变动还是挂在下标为7的数组上，所以下面这个for循环就是找到这种节点的开头，这里就是hash值为35的节点将它直接挂到
-                        // 下标为7的结点之后即可，当然上面已经处理了hash值为7的节点这种初始情况了
-                        int lastIdx = idx;
-                        for (HashEntry<K,V> last = next;
-                             last != null;
-                             last = last.next) {
-                            int k = last.hash & sizeMask;
-                            if (k != lastIdx) {
-                                lastIdx = k;
-                                lastRun = last;
-                            }
-                        }
-                        // 不发生变化的节点直接挂上去即可
-                        newTable[lastIdx] = lastRun;
-                        // 处理剩余节点，只需要将刚才处理的节点作为循环的末尾即可，这里是一种优化
-                        for (HashEntry<K,V> p = e; p != lastRun; p = p.next) {
-                            V v = p.value;
-                            int h = p.hash;
-                            int k = h & sizeMask;
-                            HashEntry<K,V> n = newTable[k];
-                            newTable[k] = new HashEntry<K,V>(h, p.key, v, n);
-                        }
+private void rehash(HashEntry<K,V> node) {
+    HashEntry<K,V>[] oldTable = table;
+    int oldCapacity = oldTable.length;
+    // 新容量是原来的2倍
+    int newCapacity = oldCapacity << 1;
+    threshold = (int)(newCapacity * loadFactor);
+    HashEntry<K,V>[] newTable =
+        (HashEntry<K,V>[]) new HashEntry[newCapacity];
+    int sizeMask = newCapacity - 1;
+    for (int i = 0; i < oldCapacity ; i++) {
+        HashEntry<K,V> e = oldTable[i];
+        if (e != null) {
+            HashEntry<K,V> next = e.next;
+            // 计算当前节点在新数组中的下标
+            int idx = e.hash & sizeMask;
+            if (next == null)   //  处理链表只有一个节点的情况
+                newTable[idx] = e;
+            else { // Reuse consecutive sequence at same slot
+                HashEntry<K,V> lastRun = e;
+                // 这里先试图寻找一些在新数组中位置不发生变化的节点，lastIdx变量保存不发生变化的第一个节点的下标
+                // 这里的原理和HashMap一致，举个例子假设HashEntry数组容量为16，那么下标为7的链表中可能包含hash值为7、14、21、28、35、42等
+                // 节点，当这个HashEntry数组被扩容到32时，显然hash值为14、21、28的节点会被放置到新位置上，而hash值为35、42、49的节点则
+                // 不发生任何变动还是挂在下标为7的数组上，所以下面这个for循环就是找到这种节点的开头，这里就是hash值为35的节点将它直接挂到
+                // 下标为7的结点之后即可，当然上面已经处理了hash值为7的节点这种初始情况了
+                int lastIdx = idx;
+                for (HashEntry<K,V> last = next;
+                     last != null;
+                     last = last.next) {
+                    int k = last.hash & sizeMask;
+                    if (k != lastIdx) {
+                        lastIdx = k;
+                        lastRun = last;
                     }
                 }
+                // 不发生变化的节点直接挂上去即可
+                newTable[lastIdx] = lastRun;
+                // 处理剩余节点，只需要将刚才处理的节点作为循环的末尾即可，这里是一种优化
+                for (HashEntry<K,V> p = e; p != lastRun; p = p.next) {
+                    V v = p.value;
+                    int h = p.hash;
+                    int k = h & sizeMask;
+                    HashEntry<K,V> n = newTable[k];
+                    newTable[k] = new HashEntry<K,V>(h, p.key, v, n);
+                }
             }
-            int nodeIndex = node.hash & sizeMask; // 添加当前待添加的节点
-            node.setNext(newTable[nodeIndex]);
-            newTable[nodeIndex] = node;
-            table = newTable;
         }
+    }
+    int nodeIndex = node.hash & sizeMask; // 添加当前待添加的节点
+    node.setNext(newTable[nodeIndex]);
+    newTable[nodeIndex] = node;
+    table = newTable;
+}
 ```
 
 ## ConcurrentHashMap
@@ -358,44 +358,44 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
 构造函数分析，这里只分析参数最全的一个，其它构造函数都是通过使用默认参数来调用这个构造函数的：
 
 ```java
-	public ConcurrentHashMap(int initialCapacity, float loadFactor, int concurrencyLevel) {
-        // 非法参数筛查
-        if (!(loadFactor > 0) || initialCapacity < 0 || concurrencyLevel <= 0)
-            throw new IllegalArgumentException();
-      	// 如果当前并发度超过了分段数组最大大小，那么会自动缩小并发度（并发度和Segment数组长度是一个概念）
-        if (concurrencyLevel > MAX_SEGMENTS)
-            concurrencyLevel = MAX_SEGMENTS;
-        // 如果给出的并发度不是2的次幂，那么会寻找一个大于该并发度的2的幂，sshift表示偏移量，ssize表示最终的并发度
-        int sshift = 0;
-        int ssize = 1;
-        while (ssize < concurrencyLevel) {
-            ++sshift;
-            ssize <<= 1;
-        }
-        // segmentShift表示，前sshift位为Segment大小，即key的hash码右移segmentShift位和下面掩码相与的值即对应的桶的位置
-        this.segmentShift = 32 - sshift;
-        // mask就是比如Segment大小为16，那掩码二进制就为1111（十进制15），说明只要将key的hash值与mask相与（相当于取余）就能得到当前key应该在哪个Segment里了
-        this.segmentMask = ssize - 1;
-        if (initialCapacity > MAXIMUM_CAPACITY)
-            initialCapacity = MAXIMUM_CAPACITY;
-        // 注意，默认初始化容量initialCapacity是全部Segment可以分到的总和，所以这里将总数除以Segment个数得到每个Segment的Entry数组长度
-        int c = initialCapacity / ssize;
-        if (c * ssize < initialCapacity)
-            ++c;
-        // 每个Segment中Entry数组最小长度，如果这个长度小于给定的initialCapacity那么会扩大2倍直到大于为止
-        int cap = MIN_SEGMENT_TABLE_CAPACITY;
-        while (cap < c)
-            cap <<= 1;
-        // 初始化Segment数组的首个元素（只初始化这一个），Segment中Entry数组的长度为cap
-        Segment<K,V> s0 =
-            new Segment<K,V>(loadFactor, (int)(cap * loadFactor),
-                             (HashEntry<K,V>[])new HashEntry[cap]);
-        // 构造Segment数组，长度为ssize（即并发度）
-        Segment<K,V>[] ss = (Segment<K,V>[])new Segment[ssize];
-        // 利用Unsafe设置数组第一个元素的值
-        UNSAFE.putOrderedObject(ss, SBASE, s0); // ordered write of segments[0]
-        this.segments = ss;
+public ConcurrentHashMap(int initialCapacity, float loadFactor, int concurrencyLevel) {
+    // 非法参数筛查
+    if (!(loadFactor > 0) || initialCapacity < 0 || concurrencyLevel <= 0)
+        throw new IllegalArgumentException();
+      // 如果当前并发度超过了分段数组最大大小，那么会自动缩小并发度（并发度和Segment数组长度是一个概念）
+    if (concurrencyLevel > MAX_SEGMENTS)
+        concurrencyLevel = MAX_SEGMENTS;
+    // 如果给出的并发度不是2的次幂，那么会寻找一个大于该并发度的2的幂，sshift表示偏移量，ssize表示最终的并发度
+    int sshift = 0;
+    int ssize = 1;
+    while (ssize < concurrencyLevel) {
+        ++sshift;
+        ssize <<= 1;
     }
+    // segmentShift表示，前sshift位为Segment大小，即key的hash码右移segmentShift位和下面掩码相与的值即对应的桶的位置
+    this.segmentShift = 32 - sshift;
+    // mask就是比如Segment大小为16，那掩码二进制就为1111（十进制15），说明只要将key的hash值与mask相与（相当于取余）就能得到当前key应该在哪个Segment里了
+    this.segmentMask = ssize - 1;
+    if (initialCapacity > MAXIMUM_CAPACITY)
+        initialCapacity = MAXIMUM_CAPACITY;
+    // 注意，默认初始化容量initialCapacity是全部Segment可以分到的总和，所以这里将总数除以Segment个数得到每个Segment的Entry数组长度
+    int c = initialCapacity / ssize;
+    if (c * ssize < initialCapacity)
+        ++c;
+    // 每个Segment中Entry数组最小长度，如果这个长度小于给定的initialCapacity那么会扩大2倍直到大于为止
+    int cap = MIN_SEGMENT_TABLE_CAPACITY;
+    while (cap < c)
+        cap <<= 1;
+    // 初始化Segment数组的首个元素（只初始化这一个），Segment中Entry数组的长度为cap
+    Segment<K,V> s0 =
+        new Segment<K,V>(loadFactor, (int)(cap * loadFactor),
+                         (HashEntry<K,V>[])new HashEntry[cap]);
+    // 构造Segment数组，长度为ssize（即并发度）
+    Segment<K,V>[] ss = (Segment<K,V>[])new Segment[ssize];
+    // 利用Unsafe设置数组第一个元素的值
+    UNSAFE.putOrderedObject(ss, SBASE, s0); // ordered write of segments[0]
+    this.segments = ss;
+}
 ```
 
 ### put
@@ -403,20 +403,20 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
 接着来看ConcurrentHashMap层面的put方法：
 
 ```java
-	public V put(K key, V value) {
-        Segment<K,V> s;
-        if (value == null)
-            throw new NullPointerException();
-        int hash = hash(key);
-        // j就是segment数组的下标，先右移拿到前32-shift位，再与mask相与（就是取余）得到下标
-        int j = (hash >>> segmentShift) & segmentMask;
-        // 这里判断对应下边的Segment是否被初始化，利用的是UNSAFE直接访问对应内存位置
-        if ((s = (Segment<K,V>)UNSAFE.getObject          // nonvolatile; recheck
-             (segments, (j << SSHIFT) + SBASE)) == null) //  in ensureSegment
-            s = ensureSegment(j);
-        // 实际调用的还是Segment的put方法，上面分析过了
-        return s.put(key, hash, value, false);
-    }
+public V put(K key, V value) {
+    Segment<K,V> s;
+    if (value == null)
+        throw new NullPointerException();
+    int hash = hash(key);
+    // j就是segment数组的下标，先右移拿到前32-shift位，再与mask相与（就是取余）得到下标
+    int j = (hash >>> segmentShift) & segmentMask;
+    // 这里判断对应下边的Segment是否被初始化，利用的是UNSAFE直接访问对应内存位置
+    if ((s = (Segment<K,V>)UNSAFE.getObject          // nonvolatile; recheck
+         (segments, (j << SSHIFT) + SBASE)) == null) //  in ensureSegment
+        s = ensureSegment(j);
+    // 实际调用的还是Segment的put方法，上面分析过了
+    return s.put(key, hash, value, false);
+}
 ```
 
 ### ensureSegment
@@ -424,31 +424,31 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
 这个函数的目的是保证当前访问的Segment被初始化了，如果没有初始化则初始化它。因为在构造函数里可以看出只有第一个Segment被初始化了，其它Segment都没有被初始化，这个初始化过程留到了第一次使用Segment的时候进行，源码如下：
 
 ```java
-	private Segment<K,V> ensureSegment(int k) {
-        final Segment<K,V>[] ss = this.segments;
-        long u = (k << SSHIFT) + SBASE; // 获取下标对应的内存偏移
-        Segment<K,V> seg;
-        // 如果没被初始化才会进入下面的if，否则直接返回被初始化后的Segment结果
-        if ((seg = (Segment<K,V>)UNSAFE.getObjectVolatile(ss, u)) == null) {
-            Segment<K,V> proto = ss[0]; // 使用下标0的Segment为参数原型
-            // 读取第0个Segmen的各种参数，包括Entry数组容量、负载因子，后续就用这些参数来初始化其它Segment
-            int cap = proto.table.length;
-            float lf = proto.loadFactor;
-            int threshold = (int)(cap * lf);
-            HashEntry<K,V>[] tab = (HashEntry<K,V>[])new HashEntry[cap];
-            if ((seg = (Segment<K,V>)UNSAFE.getObjectVolatile(ss, u))
-                == null) { // 重新检查，防止重复创建（这里是没有获取Segment锁的）
-                Segment<K,V> s = new Segment<K,V>(lf, threshold, tab);
-                // 利用CAS设值，如果已经被其它线程初始化或者当前线程设值成功则退出返回
-                while ((seg = (Segment<K,V>)UNSAFE.getObjectVolatile(ss, u))
-                       == null) {
-                    if (UNSAFE.compareAndSwapObject(ss, u, null, seg = s))
-                        break;
-                }
+private Segment<K,V> ensureSegment(int k) {
+    final Segment<K,V>[] ss = this.segments;
+    long u = (k << SSHIFT) + SBASE; // 获取下标对应的内存偏移
+    Segment<K,V> seg;
+    // 如果没被初始化才会进入下面的if，否则直接返回被初始化后的Segment结果
+    if ((seg = (Segment<K,V>)UNSAFE.getObjectVolatile(ss, u)) == null) {
+        Segment<K,V> proto = ss[0]; // 使用下标0的Segment为参数原型
+        // 读取第0个Segmen的各种参数，包括Entry数组容量、负载因子，后续就用这些参数来初始化其它Segment
+        int cap = proto.table.length;
+        float lf = proto.loadFactor;
+        int threshold = (int)(cap * lf);
+        HashEntry<K,V>[] tab = (HashEntry<K,V>[])new HashEntry[cap];
+        if ((seg = (Segment<K,V>)UNSAFE.getObjectVolatile(ss, u))
+            == null) { // 重新检查，防止重复创建（这里是没有获取Segment锁的）
+            Segment<K,V> s = new Segment<K,V>(lf, threshold, tab);
+            // 利用CAS设值，如果已经被其它线程初始化或者当前线程设值成功则退出返回
+            while ((seg = (Segment<K,V>)UNSAFE.getObjectVolatile(ss, u))
+                   == null) {
+                if (UNSAFE.compareAndSwapObject(ss, u, null, seg = s))
+                    break;
             }
         }
-        return seg;
     }
+    return seg;
+}
 ```
 
 ### get
@@ -456,25 +456,25 @@ public class ConcurrentHashMap<K, V> extends AbstractMap<K, V>
 接着分析get方法：
 
 ```java
-	public V get(Object key) {
-        Segment<K,V> s; // manually integrate access methods to reduce overhead
-        HashEntry<K,V>[] tab;
-        int h = hash(key);
-        long u = (((h >>> segmentShift) & segmentMask) << SSHIFT) + SBASE;
-        // 检查对应下标的Segment不为空，并且对应HashEntry数组也不为空
-        if ((s = (Segment<K,V>)UNSAFE.getObjectVolatile(segments, u)) != null &&
-            (tab = s.table) != null) {
-          	// 遍历寻找即可
-            for (HashEntry<K,V> e = (HashEntry<K,V>) UNSAFE.getObjectVolatile
-                     (tab, ((long)(((tab.length - 1) & h)) << TSHIFT) + TBASE);
-                 e != null; e = e.next) {
-                K k;
-                if ((k = e.key) == key || (e.hash == h && key.equals(k)))
-                    return e.value;
-            }
+public V get(Object key) {
+    Segment<K,V> s; // manually integrate access methods to reduce overhead
+    HashEntry<K,V>[] tab;
+    int h = hash(key);
+    long u = (((h >>> segmentShift) & segmentMask) << SSHIFT) + SBASE;
+    // 检查对应下标的Segment不为空，并且对应HashEntry数组也不为空
+    if ((s = (Segment<K,V>)UNSAFE.getObjectVolatile(segments, u)) != null &&
+        (tab = s.table) != null) {
+          // 遍历寻找即可
+        for (HashEntry<K,V> e = (HashEntry<K,V>) UNSAFE.getObjectVolatile
+                 (tab, ((long)(((tab.length - 1) & h)) << TSHIFT) + TBASE);
+             e != null; e = e.next) {
+            K k;
+            if ((k = e.key) == key || (e.hash == h && key.equals(k)))
+                return e.value;
         }
-        return null;
     }
+    return null;
+}
 ```
 
 过程不解释，非常简单，根据Segment数组位置和Entry数组位置找到对应Entry遍历链表查询即可。这里要注意的一点是这个方法没有加任何的锁，所以要考虑和put、remove操作并存时的并发安全问题。
