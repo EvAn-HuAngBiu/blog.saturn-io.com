@@ -30,7 +30,8 @@ private static final float LOAD_FACTOR = 0.75f;
 // 链表转红黑树阀值,> 8 链表转换为红黑树
 static final int TREEIFY_THRESHOLD = 8;
 
-//树转链表阀值，小于等于6（tranfer时，lc、hc=0两个计数器分别++记录原bin、新binTreeNode数量，<=UNTREEIFY_THRESHOLD 则untreeify(lo)）
+// 树转链表阀值，小于等于6（tranfer时，lc、hc=0两个计数器分别++记录原bin、
+// 新binTreeNode数量，<=UNTREEIFY_THRESHOLD 则untreeify(lo)）
 static final int UNTREEIFY_THRESHOLD = 6;
 static final int MIN_TREEIFY_CAPACITY = 64;
 private static final int MIN_TRANSFER_STRIDE = 16;
@@ -119,7 +120,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
                && fh == hash
                && ((fk = f.key) == key || (fk != null && key.equals(fk)))
                && (fv = f.val) != null)
-            // 这里是一个快速检查，如果对于那些不允许覆盖的操作，当检查到桶的头结点的键和待插入的键一致的话直接返回原值即可不需要插入
+          // 这里是一个快速检查，如果对于那些不允许覆盖的操作，当检查到桶的头结点的键和待插入的键一致的话直接返回原值即可不需要插入
           // 这是一种快速失败的优化
           return fv;
       else {
