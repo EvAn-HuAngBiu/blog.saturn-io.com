@@ -9,7 +9,8 @@ keywords: ReentrantLock, JUC
 
 下面我们结合`ReentrantLock`看一下AQS中`tryAcquire`和`tryReleas`是怎么交给子类实现的。`ReentrantLock`中定义了内部类`Sync`来实现同步锁的效果，`Sync`类继承自AQS实现了一部分方法，而`FairSync`和`NonfairSync`作为公平和非公平锁的实现，各自定义了`tryAcquire`方法，我们先来看一下整个类的继承层次：
 
-<img src="/images/Concurrent/ReentrantLock-Arch.png" alt="ReentrantLock-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/ReentrantLock-Arch.png" alt="ReentrantLock-Arch" style="zoom:50%;" />
 
 然后我们看一下Sync类：
 
@@ -189,7 +190,8 @@ public class ReentrantReadWriteLock implements ReadWriteLock, java.io.Serializab
 
 这个类的内部结构和`ReentrantLock`相似，都是自定义了公平锁和非公平锁的实现，但是除了锁，它还定义了读锁和写锁的内部类，类图如下：
 
-![RWLock-InncerClass-Arch](/images/Concurrent/RWLock-InncerClass-Arch.png)
+![RWLock-InncerClass-Arch](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/RWLock-InncerClass-Arch.png)
 
 下面我们还是先从Sync类开始分析：
 
@@ -314,7 +316,8 @@ static final class NonfairSync extends Sync {
 
 整个写锁获取的流程图如下：
 
-![RWLock-tryAcquire-Process](/images/Concurrent/RWLock-tryAcquire-Process.png)
+![RWLock-tryAcquire-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/RWLock-tryAcquire-Process.png)
 
 ##### 写锁释放：tryRelease
 
@@ -333,7 +336,8 @@ protected final boolean tryRelease(int releases) {
 
 独占锁的释放没有什么好说的，就是直接释放资源，注意一下是不是重入资源都被释放即可，很简单。流程图如下：
 
-![RWLock-tryRelease-Process](/images/Concurrent/RWLock-tryRelease-Process.png)
+![RWLock-tryRelease-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/RWLock-tryRelease-Process.png)
 
 ##### 读锁获取：tryAcquireShared
 
@@ -450,7 +454,8 @@ final int fullTryAcquireShared(Thread current) {
 
 总而言之，获取读锁的流程图如下：
 
-![RWLock-tryAcquireShared-Process](/images/Concurrent/RWLock-tryAcquireShared-Process.png)
+![RWLock-tryAcquireShared-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/RWLock-tryAcquireShared-Process.png)
 
 最后就是读锁的释放过程了：
 
@@ -498,6 +503,7 @@ protected final boolean tryReleaseShared(int unused) {
 
 流程很简单，就是需要更新资源和读锁重入数两个，这里不再赘述，直接看流程图：
 
-![RWLock-tryReleaseShared-Process](/images/Concurrent/RWLock-tryReleaseShared-Process.png)
+![RWLock-tryReleaseShared-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/RWLock-tryReleaseShared-Process.png)
 
 好了以上就是Sync类的整个流程了，因为`ReentrantReadWriteLock`由Sync类实现了所有获取和释放的过程，所以它的FairSync和NonfairSync类的功能只在于判断是否能够立即抢锁上（即`writerShouldBlock`和`readerShouldBlock`）两个函数，主体功能都由Sync实现好了。而ReadLock和WriterLock也只是调用了Sync类的方法来实现的，这里就不再详细说了。

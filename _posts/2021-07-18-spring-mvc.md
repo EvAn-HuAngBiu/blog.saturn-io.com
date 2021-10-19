@@ -15,7 +15,8 @@ MVC指的是模型-视图-控制器模式，最上面的一层是用户可以看
 - **View（视图）** - 视图代表模型包含的数据的可视化。
 - **Controller（控制器）** - 控制器作用于模型和视图上。它控制数据流向模型对象，并在数据变化时更新视图。它使视图与模型分离开。
 
-<div align=center><img src="/images/Spring/Spring MVC/MVC-Arch.png" alt="MVC-Arch" style="zoom:50%;"/></div>
+<div align=center><img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring MVC/MVC-Arch.png" alt="MVC-Arch" style="zoom:50%;"/></div>
 
 > ​	来源：https://www.runoob.com/design-pattern/mvc-pattern.html
 
@@ -23,7 +24,8 @@ MVC指的是模型-视图-控制器模式，最上面的一层是用户可以看
 
 首先我们明确一个概念：Spring IoC容器和Web容器之间的关系。IoC容器是用于存储Bean的，Web环境中常用的是`WebApplicationContext`的子类，默认使用的是`XmlWebApplicationContext`，通过加载XML文件的形式获取需要在Web环境中使用的Bean对象；而Web容器则提供了一系列对Web资源访问的可能性，比较常用的Web容器就是Servlet了。所以我们在理解ServletContext和ApplicationContext的时候就知道，ApplicationContext只是一个容器性的概念，而ServletContext则是容器的使用者。所以我们得到这样一个结构：
 
-<img src="/images/Spring/Spring MVC/ServletContext-ApplicationContext.png" alt="ServletContext-ApplicationContext" style="zoom:48%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring MVC/ServletContext-ApplicationContext.png" alt="ServletContext-ApplicationContext" style="zoom:48%;" />
 
 习惯上我们会把全局Servlet容器称为ServletContext或Spring容器，把每个Servlet独享的Servlet容器称为Spring MVC容器。每个Servlet容器都有自己的IoC容器，全局IoC容器是所有Servlet共享的，也称为根容器或根上下文；而每个Servlet也独享有自己的IoC容器。
 
@@ -84,7 +86,8 @@ WebApplicationContext springMVCContext = RequestContextUtils.getWebApplicationCo
 
 从上面的分析可以知道，IoC容器的启动是在ContextLoaderListener中进行的，我们先来看这个类的继承关系：
 
-<img src="/images/Spring/Spring MVC/ContextLoaderListener-Arch.png" alt="ContextLoaderListener-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring MVC/ContextLoaderListener-Arch.png" alt="ContextLoaderListener-Arch" style="zoom:50%;" />
 
 `EventListener`这条线索主要定义了ServletContext时间加载时的监听动作，而`ContextLoader`这个基类则是负责了上下文加载和初始化的核心工作。将这个继承体系合并起来理解就是在ServletContext初始化时实现上下文和IoC容器的初始化，这样就能理解`ContextLoaderListener`的作用了。事实上也是这样，`ContextLoaderListener`类在实现上完全使用基类`ContextLoader`的方法进行初始化，这些初始化的实际则由`ServletContextListener`接口所定义：
 
@@ -116,7 +119,8 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 
 所谓Web容器就是包装了IoC容器的上层容器，和BeanFactory与ApplicationContext的关系一样，Web容器最上层的接口也是ApplicationContext，并在这个接口之下定义了WebApplicationContext以及其它实现，我们来看继承层次图：
 
-![XmlWebApplicationContext-Arch](/images/Spring/Spring MVC/XmlWebApplicationContext-Arch.png)
+![XmlWebApplicationContext-Arch](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring MVC/XmlWebApplicationContext-Arch.png)
 
 这里是以`XmlWebApplicationContext`为基础进行分析的，同时省略了`ApplicationContext`继承的接口。在分析Spring IoC中我们也知道，和IoC容器的对接是通过`ApplicationContext`接口的，而对于Web容器而言，很多操作都封装在了`AbstractRefreshableWebApplicationContext`。
 
@@ -359,7 +363,8 @@ protected void configureAndRefreshWebApplicationContext(ConfigurableWebApplicati
 
 为了了解DispatcherServlet的启动过程，我们先来看它的继承关系：
 
-<img src="/images/Spring/Spring MVC/DispatcherServlet-Arch.png" alt="DispatcherServlet-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring MVC/DispatcherServlet-Arch.png" alt="DispatcherServlet-Arch" style="zoom:50%;" />
 
 它的核心功能很大一部分由父类`FrameworkServlet`实现，同时也因为间接继承了`HttpServlet`类使得DispatcherServlet具有处理HTTP请求的能力。DispatcherServlet的工作大概分为两部分：
 
@@ -489,7 +494,8 @@ protected WebApplicationContext findWebApplicationContext() {
 
 最核心的初始化入口为DispatcherServlet中的`initStrategies`方法，我们先来看整个调用栈：
 
-<img src="/images/Spring/Spring MVC/onRefresh-CallStack.png" alt="onRefresh-CallStack" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring MVC/onRefresh-CallStack.png" alt="onRefresh-CallStack" style="zoom:50%;" />
 
 可以看到，实际上调用初始化入口的是在`AbstractApplicationContext`中的`refresh`方法发布了上下文刷新事件时，调用了当前这个`initStrategies`方法，其源码如下：
 
@@ -554,7 +560,8 @@ org.springframework.web.servlet.HandlerMapping=org.springframework.web.servlet.h
 
 我们上面分析之后知道，Spring MVC对HTTP请求的处理是通过HandlerMapping实现的，一个HandlerMapping可以持有一系列的从URL请求到Controller的映射，Spring提供了一系列的HandlerMapping，其继承层次图如下：
 
-<img src="/images/Spring/Spring MVC/HandlerMapping-Arch.png" alt="HandlerMapping-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring MVC/HandlerMapping-Arch.png" alt="HandlerMapping-Arch" style="zoom:50%;" />
 
 
 
@@ -566,7 +573,8 @@ public interface HandlerMapping {    // 常量定义	String BEST_MATCHING_HANDLE
 
 它只定义了一个方法，即`getHandler`方法，它返回一个HandlerExecutionChain对象，在这个对象中封装了具体的Controller对象以及一个Interceptor链。HandlerExecutionChain对象实际上就是对Handler的一个包装，它的结构如下：
 
-<img src="/images/Spring/Spring MVC/HandlerExecutionChain-Arch.png" alt="HandlerExecutionChain-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring MVC/HandlerExecutionChain-Arch.png" alt="HandlerExecutionChain-Arch" style="zoom:50%;" />
 
 很明显，内部持有handler对象（代表Controller）以及interceptors链，并且同时支持添加拦截器。对于一个具体的HandlerMapping实现来说，它就需要根据URL映射的方式，注册Handler和interceptor，从而维护一个反映这种映射关系的handlerMap，当有一个请求到达时，就需要查找handlerMap来找到对应的HandlerExecutionChain。这个配置过程是通过一个Bean的postProcessor来完成的。
 
@@ -656,7 +664,8 @@ protected void registerHandler(String urlPath, Object handler) throws BeansExcep
 
 首先来看整个请求的调用栈：
 
-<img src="/images/Spring/Spring MVC/HandlerReg-Process.png" alt="HandlerReg-Process" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring MVC/HandlerReg-Process.png" alt="HandlerReg-Process" style="zoom:50%;" />
 
 首先明确，所有HandlerMapping实际上都是一个Bean，都会在BeanDefinition中保存，以Tomcat为例，会将`RequestMappingHandlerMapping`、`BeanNameUrlHandlerMapping`以及`SimpleUrlHandlerMapping`加入BeanDefinition中，这些HandlerMapping是默认的HandlerMapping。
 
@@ -825,7 +834,8 @@ protected Object lookupHandler(String urlPath, HttpServletRequest request) throw
 
 我们知道，HttpServlet类已经定义了处理各类请求的方法如下：
 
-<img src="/images/Spring/Spring MVC/HttpServlet-Arch.png" alt="HttpServlet-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring MVC/HttpServlet-Arch.png" alt="HttpServlet-Arch" style="zoom:50%;" />
 
 可以看到，对于各种的HTTP请求都有对应的方法进行处理，但是这些方法在`DispatcherServlet`的父类`FrameworkServlet`中都被重写了：
 

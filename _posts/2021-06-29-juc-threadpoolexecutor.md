@@ -70,7 +70,8 @@ public class ThreadPoolExecutorTest {
 
 `ThreadPoolExecutor`类的继承关系图如下：
 
-<img src="/images/Concurrent/ThreadPoolExecutor-Arch.png" alt="ThreadPoolExecutor-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/ThreadPoolExecutor-Arch.png" alt="ThreadPoolExecutor-Arch" style="zoom:50%;" />
 
 ##### 常量
 
@@ -120,13 +121,15 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
 
 所以说`ThreadPoolExecutor`的原理如下：
 
-![ThreadPoolExecutor-Loop](/images/Concurrent/ThreadPoolExecutor-Loop.png)
+![ThreadPoolExecutor-Loop](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/ThreadPoolExecutor-Loop.png)
 
 > 其实java线程池的实现原理很简单，说白了就是一个线程集合workerSet和一个阻塞队列workQueue。当用户向线程池提交一个任务(也就是线程)时，线程池会先将任务放入workQueue中。workerSet中的线程会不断的从workQueue中获取线程然后执行。当workQueue中没有任务的时候，worker就会阻塞，直到队列中有任务了就取出来继续执行。
 
 线程池状态变迁过程如下：
 
-![ThreadPoolExecutor-StatusChange](/images/Concurrent/ThreadPoolExecutor-StatusChange.png)
+![ThreadPoolExecutor-StatusChange](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/ThreadPoolExecutor-StatusChange.png)
 
 ##### 构造函数
 
@@ -144,7 +147,8 @@ public ThreadPoolExecutor(int corePoolSize, //核心线程数量
 
 首先先来看阻塞队列的继承关系图：
 
-![BlockingQueue-Arch](/images/Concurrent/BlockingQueue-Arch.png)
+![BlockingQueue-Arch](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/BlockingQueue-Arch.png)
 
 可以看到核心接口就是`BlockingQueue`，它实现了`Queue`接口，是一个单向队列，再次基础上扩展了`BlockingDeque`和`TransferQueue`两个接口，`BlockingDeque`是双向阻塞队列的接口，`TransferQueue`则扩展了生产者功能。我们这里着重分析每个实现类的特点：
 
@@ -674,7 +678,8 @@ protected <T> RunnableFuture<T> newTaskFor(Runnable runnable, T value) {
 
 综上所述，整个任务提交的流程可以概括成下图：
 
-![ThreadPoolExecutor-Submit](/images/Concurrent/ThreadPoolExecutor-Submit.png)
+![ThreadPoolExecutor-Submit](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/ThreadPoolExecutor-Submit.png)
 
 ##### 任务的关闭
 

@@ -19,7 +19,8 @@ AOP的三个基本概念包括：切点（Pointcut）、切面（Advice，也可
 
 上面说过了，Aspect定义了做哪些增强和什么时候做这两件事，Aspect结构为了同时实现这两种功能采用了继承的层次结构来实现。先来给出完成的Aspect继承层级：
 
-![Advice-Arch](/images/Spring/Spring AOP/Advice-Arch.png)
+![Advice-Arch](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring AOP/Advice-Arch.png)
 
 从这个继承层次可以看出，`Advice`接口是最上层的接口，它有三个直接实现子类`BeforeAdvice`、`AfterAdvice`和`Interceptor`。其实这个逻辑不太好理解而且可能有一些怪异，在这里，`BeforeAdvice`和`AfterAdvice`是两种已经预定义好的运行时机（即解决了"什么时候做"这件事），如果需要使用这两种预设的时机只要实现`MethodBeforeAdvice`或`AfterReturningAdvice`或`ThrowsAdvice`三种接口即可。但是如果想要自定义运行时机，比如在开始和结束同时增强，那么就需要继承`MethodInterceptor`接口自己来实现这种运行逻辑了。
 
@@ -449,7 +450,8 @@ public class CglibProxy {
 
 我们知道，要实现AOP主要依赖的是代理机制，那么AOP代理的实现最核心的部分就是代理对象的生成操作了。对于Spring对象而言，是通过调用`ProxyFactoryBean`来完成这个任务的，在`ProxyFactoryBean`中封装了主要代理对象的生成过程。在这个生成过程中可以使用JDK的Prxoy和CGLIB两种方式，以`ProxyFactory`的设计为中心，可以看到相关的类继承关系：
 
-<img src="/images/Spring/Spring AOP/ProxyFactory-Arch.png" alt="ProxyFactory-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring AOP/ProxyFactory-Arch.png" alt="ProxyFactory-Arch" style="zoom:50%;" />
 
 在上面的类继承关系中，`ProxyConfig`是数据基类，为子类提供了配置属性；而在`AdvisedSupport`中，封装了AOP对通知和通知器的相关操作，但对于具体的AOP代理对象的创建，`AdvisedSupport`把它交给它的子类们去完成，对于`ProxyCreatorSupport`，可以将它看成是其子类创建AOP代理对象的一个辅助类。
 

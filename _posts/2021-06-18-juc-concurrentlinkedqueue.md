@@ -136,7 +136,8 @@ public boolean offer(E e) {
 
 上面的说法很复杂，我们用一个例子来说明这件事：
 
-![CLQ-Offer-Process](/images/Concurrent/CLQ-Offer-Process.png)
+![CLQ-Offer-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/CLQ-Offer-Process.png)
 
 很明显可以看到的是，tail总是隔一个更新一次，这样做是为了避免反复CAS更新尾结点带来的效率损失，但是这样也增加了整个流程的复杂度。这个例子没有体现 p == q的情况，这个情况，我们放到删除元素时再讨论。
 
@@ -144,7 +145,8 @@ public boolean offer(E e) {
 
 元素的删除操作和添加类似，head结点的更新也存在滞后性：并不是每次删除时都更新head节点，当head节点里有元素时，直接弹出head节点里的元素，而不会更新head节点。只有当head节点里没有元素时，删除操作才会更新head节点。采用这种方式也是为了减少使用CAS更新head节点的消耗，从而提高出队效率。下面先来看整个流程的示意图：
 
-![CLQ-Poll-Process](/images/Concurrent/CLQ-Poll-Process.png)
+![CLQ-Poll-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/CLQ-Poll-Process.png)
 
 再来看源码：
 
@@ -191,7 +193,8 @@ final void updateHead(Node<E> h, Node<E> p) {
 
 我们考虑一下这种情况：
 
-![CLQ-Special-Process](/images/Concurrent/CLQ-Special-Process.png)
+![CLQ-Special-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/CLQ-Special-Process.png)
 
 当前head指向被删除的结点，tail指向倒数第二个结点，也就是head和tail同时出现滞后性的这种情况。这时候如果我们尝试去删除头结点，那么会导致头结点移动到当前真实头结点的下一个结点，也就是head指针会越过tail指针，因为在`poll`方法中没有对tail指针做过任何修改。此时会调用`updateHead(h, ((q = p.next) != null) ? q : p);`代码，也就是`updateHead(h, q)`。这个时候原始头结点h的next结点即当前tail指示的结点就多了一个自连接。所以为了解决这种问题，需要在`offer`中判断一下 `p == q`。
 

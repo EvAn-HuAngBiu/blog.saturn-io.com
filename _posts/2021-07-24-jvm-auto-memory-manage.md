@@ -15,7 +15,8 @@ keywords: JVM
 
 Java内存整体布局结构如下：
 
-![Java运行时数据区域](/images/JVM/Java运行时数据区域.png)
+![Java运行时数据区域](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/Java运行时数据区域.png)
 
 #### 程序计数器
 
@@ -151,7 +152,8 @@ public class CreateInstanceByReflection {
 
 对象头的结构如下所示，它是会随着锁状态的不同而发生变化的：
 
-![MarkWor](/images/JVM/MarkWor.png)
+![MarkWor](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/MarkWor.png)
 
 可以看到，在不同的时候Mark Work是不同，这里先解释一下锁状态的概念：
 
@@ -165,7 +167,8 @@ public class CreateInstanceByReflection {
 
 可以使用jol来获取对象头信息，我们下面给出一个实例信息：
 
-![JOL-Example-Snapshot](/images/JVM/JOL-Example-Snapshot.png)
+![JOL-Example-Snapshot](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JOL-Example-Snapshot.png)
 
 可以看到，对象头一共有12B，实例数据有5B（int为4B，boolean为1B），有效数据为17B，由于对象大小必须是8B的倍数，所以需要填充7B的内容。
 
@@ -185,9 +188,11 @@ public class CreateInstanceByReflection {
 
 可以看出，句柄访问是一种间接访问，它需要两次访问内存才能得到对象，但是其优点是稳定，在对象被移动时（如GC时）只会改变句柄中的实例数据指针，而引用本身不会发生改变；而直接访问的优点就是快，节省了一次指针定位时间的开销。**Hotspot采用的是直接访问的方式**。
 
-<img src="/images/JVM/Oops-Visit-By-Direct.png" alt="Oops-Visit-By-Direct" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/Oops-Visit-By-Direct.png" alt="Oops-Visit-By-Direct" style="zoom:50%;" />
 
-<img src="/images/JVM/Oops-Visit-By-Handle.png" alt="Oops-Visit-By-Handle" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/Oops-Visit-By-Handle.png" alt="Oops-Visit-By-Handle" style="zoom:50%;" />
 
 ### JVM常见异常实验
 
@@ -344,13 +349,15 @@ public class CreateInstanceByReflection {
 
 我们先来看七种不同的垃圾收集器作用的分代情况：
 
-<img src="/images/JVM/GC-Gen-Arch.png" alt="GC-Gen-Arch" style="zoom:30%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/GC-Gen-Arch.png" alt="GC-Gen-Arch" style="zoom:30%;" />
 
 #### Serial / Serial Old
 
 流程图：
 
-<img src="/images/JVM/Serial-SerialOld-Process.png" alt="Serial-SerialOld-Process" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/Serial-SerialOld-Process.png" alt="Serial-SerialOld-Process" style="zoom:50%;" />
 
 可以看出来它是单线程的垃圾收集器（单线程是指在进行垃圾收集时，必须暂停所有用户线程直到收集结束）
 
@@ -360,7 +367,8 @@ public class CreateInstanceByReflection {
 
 ParNew是Serial收集器的多线程并行版本，其相比Serial的唯一改进就是在新生代垃圾收集时采用了多个线程进行收集：
 
-<img src="/images/JVM/ParNew-SerialOld-Process.png" alt="ParNew-SerialOld-Process" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/ParNew-SerialOld-Process.png" alt="ParNew-SerialOld-Process" style="zoom:50%;" />
 
 可以看出来ParNew + Serial Old和Serial + Serial Old的差别仅仅在于GC线程的数量上。ParNew默认使用的GC线程数与处理器核心数量相同。
 
@@ -376,7 +384,8 @@ ParNew是Serial收集器的多线程并行版本，其相比Serial的唯一改�
 
 Parallel Scavenge是一款新生代收集器，同样基于标记-复制算法实现，也是能够并行收集的多线程收集器；而Parallel Old则是一款老年代收集器，基于标记-整理算法实现，同样支持并行收集。二者组合的流程图如下：
 
-<img src="/images/JVM/ParallelScavenge-ParallelOld-Process.png" alt="ParallelScavenge-ParallelOld-Process" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/ParallelScavenge-ParallelOld-Process.png" alt="ParallelScavenge-ParallelOld-Process" style="zoom:50%;" />
 
 可以看到，它和ParNew在新生代上完全没有区别，仅仅在老年代上采用了多线程收集。但是Praallel收集器的关注点并不是缩短停顿时间，而是达到一个可控制的吞吐量。吞吐量就是处理器用于运行用户代码的时间与处理器总消耗时间的比值：
 $$
@@ -399,7 +408,8 @@ ConcurrentMarkSweep收集器的目标是获取最短的停顿时间，基于标�
 
 我们先来看整个执行的流程图：
 
-<img src="/images/JVM/CMS-Proces.png" alt="CMS-Proces" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/CMS-Proces.png" alt="CMS-Proces" style="zoom:50%;" />
 
 可以看到只有初始标记和重新标记阶段需要STW，这两个阶段的速度要远比并发标记快，所以整体的STW时间不会太长。CMS在重新标记阶段采用的是增量更新法，就是会记录用户线程对对象图中新加入的存活对象到被标记的死亡对象之间的引用，并从存活对象为根重新扫描。
 
@@ -421,7 +431,8 @@ G1的垃圾回收是以Region为单位的，G1收集器会跟踪各个Region里�
 
 G1收集器Region分区示意图：
 
-<img src="/images/JVM/G1-Region-Process.png" alt="G1-Region-Process" style="zoom:30%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/G1-Region-Process.png" alt="G1-Region-Process" style="zoom:30%;" />
 
 我们可以将G1的垃圾回收过程分为以下四个步骤：
 
@@ -435,7 +446,8 @@ G1收集器Region分区示意图：
 
 4. 筛选回收：负责更新Region的统计数据，对各个Region的回收价值和成本进行排序，根据用户所期望的停顿时间来制定回收计划，可以自由选择任意多个Region构成回收集，然后把决定回收的那一部分Region的存活对象复制到空的Region中，再清理掉整个旧Region的全部空间。这里的操作涉及存活对象的移动，是必须暂停用户线程，由多个收集器线程并行完成的。
 
-<img src="/images/JVM/G1-Process.png" alt="G1-Process" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/G1-Process.png" alt="G1-Process" style="zoom:50%;" />
 
 从上述阶段的描述可以知道，G1收集器除了并发标记阶段外，其余阶段也是完全暂停用户线程的，即它并非纯粹追求低延迟，而是在延迟可控的基础上获得尽可能高的吞吐量。
 

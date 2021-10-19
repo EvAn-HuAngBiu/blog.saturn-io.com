@@ -9,7 +9,8 @@ keywords: ConcurrentHashMap, JUC
 
 ConcurrentHashMap在Java1.7及之前版本是通过Segment+HashEntry数组（桶）+链表的方法保证线程安全的，其相对于HashTable的一个优势就在于它加锁的粒度更细，它每次只给一个Segmeng加锁，所以Segment的个数（初始化后就不可修改）就代表了当前ConcurrentHashMap的并发数，如下图所示：
 
-<img src="/images/Concurrent/ConcurrentHashMapOverallV7.png" alt="ConcurrentHashMapOverallV7" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/ConcurrentHashMapOverallV7.png" alt="ConcurrentHashMapOverallV7" style="zoom:50%;" />
 
 源码中使用了`concurrentLevel`来表示Segment的个数，默认是 16，也就是说 ConcurrentHashMap 有 16 个 Segments，所以理论上，这个时候，最多可以同时支持 16 个线程并发写，只要它们的操作分别分布在不同的 Segment 上。这个值可以在初始化的时候设置为其他值，但是一旦初始化以后，它是不可以扩容的。
 

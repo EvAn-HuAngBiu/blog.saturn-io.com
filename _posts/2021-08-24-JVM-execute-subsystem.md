@@ -151,11 +151,14 @@ Constant pool:
 
 每个常量都有自己的数据结构，这里我们列出上述所有常量的数据结构：
 
-<img src="/images/JVM/JVM-Class-ConstantPool-01.png" alt="JVM-Class-ConstantPool-01" style="zoom: 67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-ConstantPool-01.png" alt="JVM-Class-ConstantPool-01" style="zoom: 67%;" />
 
-<img src="/images/JVM/JVM-Class-ConstantPool-02.png" alt="JVM-Class-ConstantPool-02" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-ConstantPool-02.png" alt="JVM-Class-ConstantPool-02" style="zoom:67%;" />
 
-<img src="/images/JVM/JVM-Class-ConstantPool-03.png" alt="JVM-Class-ConstantPool-03" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-ConstantPool-03.png" alt="JVM-Class-ConstantPool-03" style="zoom:67%;" />
 
 这里解释一下UTF8类型的常量的定义，UTF8类型常量定义了长度length单位为字节，最大值为0xFF字节（65535B = 64KB），也就是说如果类、接口的全限定名以及方法、变量的名称如果在压缩UTF-8编码下大于64KB，那么即使满足命名规则也无法编译（压缩UTF-8是指，如果一个字节能存储的下那就使用一个字节存储，如果两个字节能存储的下，那就使用两个字节存储以此类推，普通UTF-8在一个字节能存储的情况下也会使用两个字节来存储）
 
@@ -185,17 +188,20 @@ Constant pool:
 
 字段表用于描述接口或类中声明的变量，这些字段包括类级字段和实例级变量，但是不包括定义在方法内部的局部变量，字段表的结构如下：
 
-<img src="/images/JVM/JVM-Class-FieldTable-Arch.png" alt="JVM-Class-FieldTable-Arch" style="zoom: 67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-FieldTable-Arch.png" alt="JVM-Class-FieldTable-Arch" style="zoom: 67%;" />
 
 字段的修饰被放在了access_flags项目中，它与类中的access_flag非常一致，都是一个u2的数据类型：
 
-<img src="/images/JVM/JVM-Class-Field-AccessFlag.png" alt="JVM-Class-FieldTable-Arch" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-Field-AccessFlag.png" alt="JVM-Class-FieldTable-Arch" style="zoom:67%;" />
 
 在access_flags之后就是指向字段（方法）简单名称和字段（方法）的描述符。例如ArrayList中的`void set(int index, E element)`方法，它的简单名称就是set，描述符就是(IL)V，全限定名称就是java/util/ArrayList; 
 
 在这里全限定名称就是将包名中的 . 换成了 /，并且在末尾加上分号作为结束。字段描述符的含义如下表：
 
-<img src="/images/JVM/JVM-Class-Field-Descriptor.png" alt="JVM-Class-Field-Descriptor" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-Field-Descriptor.png" alt="JVM-Class-Field-Descriptor" style="zoom:67%;" />
 
 对于数组类型会在前面加上"["，例如String[]则是 "L[java/lang/String;"，对于多维数组则在前面加上多个"["，例如String\[\]\[\]则是"L[[java/lang/String;"。
 
@@ -262,7 +268,8 @@ SourceFile: "Main.java"
 
 我们再来看对应的16进制字节码：
 
-![JVM-Class-Field-XXDAnly1](/images/JVM/JVM-Class-Field-XXDAnly1.png)
+![JVM-Class-Field-XXDAnly1](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-Field-XXDAnly1.png)
 
 我们看蓝色方框内的就是第一个字段的定义，这个字段前的0002表示有2个字段，蓝色方框内的0002表示access_flag，这里表示ACC_PRIVATE（0x0002），后续的0004表示简单名称为常量池中第4个常量，我们找上面反编译结果查看4号常量：
 
@@ -276,11 +283,13 @@ SourceFile: "Main.java"
 
 方法表的结构和字段表完全一样：
 
-<img src="/images/JVM/JVM-Class-FieldTable-Arch.png" alt="JVM-Class-FieldTable-Arch" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-FieldTable-Arch.png" alt="JVM-Class-FieldTable-Arch" style="zoom:67%;" />
 
 唯一稍有区别的就是access_flags属性，由于volatile和transient不能修饰方法，而synchronized、native、strictfp和abstract关键字可以修饰方法，所以相应增减了一些标志：
 
-<img src="/images/JVM/JVM-Class-Method-AccFlag.png" alt="JVM-Class-Method-AccFlag" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-Method-AccFlag.png" alt="JVM-Class-Method-AccFlag" style="zoom:67%;" />
 
 而在方法表中只保存了对方法名称、标识符等信息，实际的代码保存在属性表（后面会说到）的Code属性中了。比如下面这个类：
 
@@ -326,7 +335,8 @@ public class Main {
 
 Class文件的十六进制码如下：
 
-<img src="/images/JVM/JVM-Class-Method-XXDAnly1.png" alt="JVM-Class-Method-XXDAnly1" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-Method-XXDAnly1.png" alt="JVM-Class-Method-XXDAnly1" style="zoom:67%;" />
 
 这里还是比较复杂的，因为后面有属性表的缘故。上面的类中定义了1个方法和隐式生成的构造方法共2个方法。第一个方法标识符为0x0001即PUBLIC，方法名定义在0x0007号常量中，查看常量池可知是`#7 = Utf8  <init>`即\<init\>方法，描述符为0x0008号常量即" ()V "，属性表共有1个属性，定义在后面，属性表之后再进行分析；第二个方法同理，标识符为0x0001即PUBLIC，名称为0x000b即11号常量sayHello，描述符为0x0008即" ()V "。
 
@@ -336,13 +346,16 @@ Class文件的十六进制码如下：
 
 属性表的内容很多也很复杂，这里首先列出预定义的属性：
 
-<img src="/images/JVM/JVM-Class-AttributeTable-Arch-1.png" alt="JVM-Class-AttributeTable-Arch-1" style="zoom: 67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-AttributeTable-Arch-1.png" alt="JVM-Class-AttributeTable-Arch-1" style="zoom: 67%;" />
 
-<img src="/images/JVM/JVM-Class-AttributeTable-Arch-2.png" alt="JVM-Class-AttributeTable-Arch-2" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-AttributeTable-Arch-2.png" alt="JVM-Class-AttributeTable-Arch-2" style="zoom:67%;" />
 
 属性表的结构如下：
 
-<img src="/images/JVM/JVM-Class-AttributeTable-Arch.png" alt="JVM-Class-AttributeTable-Arch" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-AttributeTable-Arch.png" alt="JVM-Class-AttributeTable-Arch" style="zoom:67%;" />
 
 这里就只简略分析比较重要的一些属性：
 
@@ -350,11 +363,13 @@ Class文件的十六进制码如下：
 
 Code属性是使用最频繁的一个属性，它的作用是存储每个方法中的实际代码（接口或抽象类不一定存在）。Code属性的结构如下：
 
-<img src="/images/JVM/JVM-Class-AttributeTable-Code-Arch.png" alt="JVM-Class-AttributeTable-Code-Arch" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-AttributeTable-Code-Arch.png" alt="JVM-Class-AttributeTable-Code-Arch" style="zoom:67%;" />
 
 **attribute_name_index**是指向CONSTANT_Utf8_info类型常量的索引，为固定值”Code“，attribute_length为属性值的长度，由于attribute_name_index和attribute_length的长度固定为6个字节，所以整个属性表的长度为attribute_length + 6。**max_stack**是最大操作数栈深度，在方法执行的任何时候操作数栈都不会超过这个深度，虚拟机在执行时根据这个值来分配栈帧中的操作数栈深度，也就是操作数栈的深度在编译完成后就是确定的。**max_local**是局部变量所需的存储空间，单位是槽，方法参数、异常参数、局部变量都依赖局部变量表来存储，在这里当某个变量超出其作用域后会对其所占用的变量槽进行复用，也就是这个max_local并不只是简单统计变量个数，而是会根据变量的作用域来计算最小需要的槽的个数。**code_length和code**用来存储Java编译后生成的字节码指令。Java目前规定了约200条指令，而使用一个u1类型的变量最大可以存储0xFF条指令（255条）。将指令顺序排列就构成了方法中的实际代码执行顺序了。这里需要注意code_length虽然存储空间为u4，即理论上最大可以存储0xFFFF条指令（2的32次幂），但是Java虚拟机规范规定了，如果代码超过0xFF条指令（65535）就会拒绝编译。所以code_length的高2字节始终为0。我们接下来回到上面的例子：
 
-<img src="/images/JVM/JVM-Class-Method-XXDAnly1.png" alt="JVM-Class-Method-XXDAnly1" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-Method-XXDAnly1.png" alt="JVM-Class-Method-XXDAnly1" style="zoom:67%;" />
 
 第一个方法属性表中的0x0009表示当前属性的名称在0x0009号常量中存储，查看可知是`#9 = Utf8  Code`，接着u4类型的0x0000001d表明当前属性值的长度为29个字节，接着两个0x0001表示最大栈深度和局部变量表大小均为1，这也可以在反编译后的信息中看到：
 
@@ -392,7 +407,8 @@ Code属性是使用最频繁的一个属性，它的作用是存储每个方法�
 
 接着来看Code属性，在代码之后列出的就是异常表了（和Exception属性不一样），这里的异常表指的是如果当前字节码的start_pc行到end_pc行（不含）之间存在类型为catch_type的异常或子异常（指向一个CONSTANT_Class_info型常量），那么就转到hander_pc行继续执行：
 
-<img src="/images/JVM/JVM-Class-AttributeTable-Exception-Arch.png" alt="JVM-Class-AttributeTable-Exception-Arch" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-AttributeTable-Exception-Arch.png" alt="JVM-Class-AttributeTable-Exception-Arch" style="zoom:67%;" />
 
 这个异常表不是必须的，内容也比较通俗易懂，这就不再赘述了。好了以上就是Code属性的内容，Code属性的最后还有attribute值可供属性的嵌套使用，这里就不分析了。
 
@@ -400,7 +416,8 @@ Code属性是使用最频繁的一个属性，它的作用是存储每个方法�
 
 Exception属性是指当前方法声明的所有受查异常，也就是定义方法时throws列出的异常，他的结构如下：
 
-<img src="/images/JVM/JVM-Class-AttributeTable-ExceptionAttr-Arch.png" alt="JVM-Class-AttributeTable-ExceptionAttr-Arch" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-AttributeTable-ExceptionAttr-Arch.png" alt="JVM-Class-AttributeTable-ExceptionAttr-Arch" style="zoom:67%;" />
 
 这里的exception_index_table就是指向常量池中具体异常类型CONSTATNT_Class_info的序号。
 
@@ -410,7 +427,8 @@ ConstantValue属性的作用是通知虚拟机自动为静态变量赋值，只�
 
 Javac编译器的选择是，对于同时使用final和static修饰的变量并且这个变量是String类型的，那么就使用ConstantValue初始化；如果这个变量没有被final修饰，或者非基本类型及字符串，则将会选择在\<clinit\>()方法中进行初始化。我们来看ConstantValue的属性结构：
 
-<img src="/images/JVM/JVM-Class-AttributeTable-ConstantValue.png" alt="JVM-Class-AttributeTable-ConstantValue" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-AttributeTable-ConstantValue.png" alt="JVM-Class-AttributeTable-ConstantValue" style="zoom:67%;" />
 
 这里constantvalue_index代表了常量池中一个字面量常量的引用，根据字段类型的不同，字面量可以是CONSTANT_Long_info、CONSTANT_Float_info、CONSTANT_Double_info、CONSTANT_Integer_info和CONSTANT_String_info常量中的一种。
 
@@ -422,7 +440,8 @@ Javac编译器的选择是，对于同时使用final和static修饰的变量并�
 
 一个类型从被加载到虚拟机内存中开始到卸出内存为止，它的整个生命周期将会经历**加载、验证、准备、解析、初始化、使用和卸载**七个阶段，其中**验证、准备、解析**三个部分统称为连接。
 
-<img src="/images/JVM/JVM-Class-Load-Process.png" alt="JVM-Class-Load-Process" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-Load-Process.png" alt="JVM-Class-Load-Process" style="zoom:67%;" />
 
 其中加载、验证、准备、初始化和卸载这五个阶段的执行顺序是确定的，但是解析阶段则不一定，它有可能在初始化之后进行（为了支持动态绑定）。由于类加载各个阶段可能会激活其它阶段运行，所以上述这些阶段的顺序并不是说是按照这个顺序完成的，而是按照这个顺序开始。
 
@@ -558,7 +577,8 @@ public static int i = 10;
 
 实际上这个赋值的过程是在静态构造块即\<clinit\>函数中实现的，而这个赋值操作实际上发生在初始化阶段。准备阶段要做的是为这个变量分配内存空间，并且设置一个零值，这样即使没有初始化这个静态变量，我们也可以访问到一个”合理“的值。各个变量的零值如下：
 
-<img src="/images/JVM/JVM-Class-Prepare-ZeroValue.png" alt="JVM-Class-Prepare-ZeroValue" style="zoom:67%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-Prepare-ZeroValue.png" alt="JVM-Class-Prepare-ZeroValue" style="zoom:67%;" />
 
 但是，如果一个变量存在ConstantValue属性（这在类文件格式属性表中说过），那么实际上会用ConstantValue对应的值来进行初始化，能使用ConstantValue的变量一定是static final类型的变量：
 
@@ -633,7 +653,8 @@ public class Test {
 
 类加载器采用的是双亲委派模型，即除了顶层的启动类加载器，其它类加载器都应该拥有自己的父类加载器，在进行类加载的时候，当前类加载器首先不会自己尝试去加载这个类，而是交给父类加载器去完成，最终所有的请求都应该被传送到最顶层的启动类加载器完成，只有父类加载器反馈无法加载时，子类加载器才会尝试自己加载。结构图如下：
 
-<img src="/images/JVM/JVM-Class-ClassLoader-Model.png" alt="JVM-Class-ClassLoader-Model" style="zoom:25%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-Class-ClassLoader-Model.png" alt="JVM-Class-ClassLoader-Model" style="zoom:25%;" />
 
 双亲委派模型的好处就是让类加载有了层次关系，保证了大多数类都由公共的类加载器加载，例如Object类始终由启动类加载器加载，这样就防止由于类加载器不同而产生了多个不同的Object类。
 
@@ -649,7 +670,8 @@ public class Test {
 
 虚拟机以方法作为最基本的执行单元，栈帧则是用于支持虚拟机进行方法调用和方法执行背后的数据结构，它也是虚拟机栈中的栈元素。**栈帧存储了局部变量表、操作数栈、动态链接和方法返回等信息**。一个方法的执行也就对应着一个栈帧入栈和出栈的过程。栈帧中的局部变量表、操作数栈的大小已经在编译期确定并且写入到方法Code属性中了，所以**栈帧的大小在编译期就能确定，并不会受到程序运行期变量数据的影响**。对于执行引擎而言只有处于栈顶部的栈帧才是处于运行状态的，称为当前栈帧，这个栈帧关联的方法称为当前方法。（正是因为方法是以栈帧的方法存在的，所以调试时“回退到上一步”实现就是通过丢弃栈顶活动栈帧来实现的）
 
-<img src="/images/JVM/JVM-StackFrame-Logic-Arch.png" alt="JVM-StackFrame-Logic-Arch" style="zoom:30%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/JVM/JVM-StackFrame-Logic-Arch.png" alt="JVM-StackFrame-Logic-Arch" style="zoom:30%;" />
 
 ##### 局部变量表
 

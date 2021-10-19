@@ -13,7 +13,8 @@ IoC：对象反转容器，**解决的问题**如果合作对象的引用或依�
 
 IoC容器的**最顶层接口**为`BeanFactory`，仅实现了该接口的类为简单容器，这系列容器只包含了容器的最基本功能，`BeanFactory`类的方法如下：
 
-<img src="/images/Spring/Spring IoC/BeanFactory-Method.png" alt="BeanFactory-Method" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Spring/Spring IoC/BeanFactory-Method.png" alt="BeanFactory-Method" style="zoom:50%;" />
 
 
 

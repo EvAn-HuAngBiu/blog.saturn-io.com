@@ -9,7 +9,8 @@ keywords: FutureTask, JUC
 
 FutureTask个人感觉就是用来包装Runnable或者Callable对象的，用于监测线程状态、获取异常、控制运行等。其继承结构如下：
 
-<img src="/images/Concurrent/FutureTask-Arch.png" alt="FutureTask-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/FutureTask-Arch.png" alt="FutureTask-Arch" style="zoom:50%;" />
 
 可以从上图看出，`FutureTask`类本身实现了`Runnable`接口，同时也持有一个`Runnable`对象，类似一个适配器，同时被`FuturenTask`包装的类也可以直接被线程池执行。
 
@@ -50,7 +51,8 @@ public class FutureTask<V> implements RunnableFuture<V> {
 
 `FutureTask`任务状态的变迁图如下：
 
-<img src="/images/Concurrent/FutureTask-Status-Change.png" alt="FutureTask-Status-Change" style="zoom:75%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Concurrent/FutureTask-Status-Change.png" alt="FutureTask-Status-Change" style="zoom:75%;" />
 
 上述状态中要注意，CANCELLED状态意味着用户取消了任务，它并不会导致任务抛出异常（但是取消之后再去取结果会导致`CancellationException`异常），而如果中断了线程则在run函数运行期间就会导致异常被设置到outcome中。同时要注意outcome有两个语义：一个是正常运行结束后的运行结果，另一个是异常运行抛出的异常。
 

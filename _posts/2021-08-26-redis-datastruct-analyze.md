@@ -8,7 +8,8 @@ keywords: Redis,数据结构
 
 ## Redis数据结构研究
 
-![Redis-DataStruct-Global-Arch](/images/Redis/Redis-DataStruct-Global-Arch.jpg)
+![Redis-DataStruct-Global-Arch](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-DataStruct-Global-Arch.jpg)
 
 Redis的数据结构总览见上图，Redis的核心就是一个在内存中的哈希表，哈希表的键（Key）是字符串类型，值（Value）有字符串、哈希、列表、集合、有序集合以及BitMap、Geo和HyperLogLog几种类型构成。
 
@@ -26,7 +27,8 @@ SDS的存储分为两个部分，即SDS头以及数据部分，两个部分独�
 
 SDS的结构如下图所示（为了逻辑连贯画到了一起，但是实际可能不在一起）：
 
-![Redis-String-SDS-Arch](/images/Redis/Redis-String-SDS-Arch.png)
+![Redis-String-SDS-Arch](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-String-SDS-Arch.png)
 
 其中len用来表示字符串的长度，free表示当前空闲的空间的起始点偏移值，buf则指向实际的数据的存储起点，用C语言来表示就是：
 
@@ -94,7 +96,8 @@ SDS的优点有：
 
 我们可以将字符串的存储结构表示为（不区分EMBSTR和RAW）：
 
-<img src="/images/Redis/Redis-String-Arch.png" alt="Redis-String-Arch" style="zoom:40%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-String-Arch.png" alt="Redis-String-Arch" style="zoom:40%;" />
 
 ### 哈希表Hash
 
@@ -202,13 +205,15 @@ typedef struct zlentry {
 
 我们可以将压缩链表的存储结构表示为：
 
-<img src="/images/Redis/Redis-ZipList-Arch.png" alt="Redis-ZipList-Arch" style="zoom:40%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-ZipList-Arch.png" alt="Redis-ZipList-Arch" style="zoom:40%;" />
 
 #### HashTable
 
 当哈希表中元素个数超过512或者某个值长度超过64字节时，哈希表会转换为使用HashTable来进行存储。**Redis中的HashTable采用拉链法来解决哈希碰撞问题**。实际上对于HashTable来说，它和一般的哈希表没什么区别，唯一有区别的就在于重散列上。先来看其定义的结构图：
 
-<img src="/images/Redis/Redis-HashTable-Arch.png" alt="Redis-HashTable-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-HashTable-Arch.png" alt="Redis-HashTable-Arch" style="zoom:50%;" />
 
 可以看到，和普通的哈希表没有太多差异，无非就是每一级都加上了若干个头部元素，以及实际上存在两个table，一个用于实际存储，另一个用于rehash使用。
 
@@ -353,7 +358,8 @@ typedef struct list {
 
 非常显而易见的结构，非常简单，查找时间复杂度为O（N），下面用一张图来表示整个双向链表结构：
 
-<img src="/images/Redis/Redis-List-Arch.png" alt="Redis-List-Arch" style="zoom:100%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-List-Arch.png" alt="Redis-List-Arch" style="zoom:100%;" />
 
 ### 集合Set
 
@@ -392,7 +398,8 @@ typedef struct intset {
 
 假设当前intset中存放了3个整数1、3、10，此时intset的encoding为INTSET_ENC_INT16，当我们要插入整数65535时发现，int16_t编码无法表示这个整数，所以要将数组的编码升级为**int32_t**，这个升级不仅仅只是修改encoding字段这么简单，contents数组中原有的整数也要全部扩容为使用int32_t编码存储，这就导致了了原本占用2个字节的整数1、3、10都会被扩容为使用4个字节的int32_t编码，如下示意图所示：
 
-![Redis-Intset-Upgrade-Process](/images/Redis/Redis-Intset-Upgrade-Process.jpeg)
+![Redis-Intset-Upgrade-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-Intset-Upgrade-Process.jpeg)
 
 要注意的是encoding只支持扩容，不支持缩容，如果删除了65535之后，前面的1、3、10还会使用int32_t编码存储。但是由于整个intset数组是有序的，它的很多操作都可以利用有序这个特点，所以整体时间复杂度不高，是一个比较高效的数据结构。
 
@@ -404,15 +411,18 @@ typedef struct intset {
 
 跳表实际上就是在有序链表的基础上形成的一种新的数据结构，对于有序链表而言，查找一个元素的时间复杂度为O(n)，如下图所示：
 
-![Redis-SkipList-SortedList-Arch](/images/Redis/Redis-SkipList-SortedList-Arch.png)
+![Redis-SkipList-SortedList-Arch](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-SkipList-SortedList-Arch.png)
 
 一种优化的思路就是在链表上增加一层，让它一次跳过若干个结点而不只是一个结点，就形成了下面这种结构：
 
-![Redis-SkipList-Dual-Level-Sorted-List-Arch](/images/Redis/Redis-SkipList-Dual-Level-Sorted-List-Arch.png)
+![Redis-SkipList-Dual-Level-Sorted-List-Arch](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-SkipList-Dual-Level-Sorted-List-Arch.png)
 
 这样所有新增加的指针连成了一个新的链表，但它包含的节点个数只有原来的一半（上图中是7, 19, 26）。现在当我们想查找数据的时候，可以先沿着这个新链表进行查找。当碰到比待查数据大的节点时，再回到原来的链表中进行查找。比如，我们想查找23，查找的路径是沿着下图中标红的指针所指向的方向进行的：
 
-![Redis-SkipList-Dual-Level-Sorted-List-Search-Arch](/images/Redis/Redis-SkipList-Dual-Level-Sorted-List-Search-Arch.png)
+![Redis-SkipList-Dual-Level-Sorted-List-Search-Arch](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-SkipList-Dual-Level-Sorted-List-Search-Arch.png)
 
 - 23首先和7比较，再和19比较，比它们都大，继续向后比较。
 - 但23和26比较的时候，比26要小，因此回到下面的链表（原链表），与22比较。
@@ -424,7 +434,8 @@ typedef struct intset {
 
 skiplist为了避免这一问题，**它不要求上下相邻两层链表之间的节点个数有严格的对应关系**，而是为每个节点随机出一个层数(level)。比如，一个节点随机出的层数是3，那么就把它链入到第1层到第3层这三层链表中。为了表达清楚，下图展示了如何通过一步步的插入操作从而形成一个skiplist的过程：
 
-![Redis-SkipList-Insert](/images/Redis/Redis-SkipList-Insert.png)
+![Redis-SkipList-Insert](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-SkipList-Insert.png)
 
 从上面skiplist的创建和插入过程可以看出，每一个节点的层数（level）是随机出来的，而且新插入一个节点不会影响其它节点的层数。因此，插入操作只需要修改插入节点前后的指针，而不需要对很多节点都进行调整。这就降低了插入操作的复杂度。
 
@@ -489,7 +500,8 @@ zskiplist就是跳表本身，其中有以下字段。
 
 我们用下面这张图来表示Skiplist的结构，为了简化图示，这里省略了RedisObject的内容:
 
-![Redis-Skiplist-Status-Process](/images/Redis/Redis-Skiplist-Status-Process.png)
+![Redis-Skiplist-Status-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-Skiplist-Status-Process.png)
 
 看上去很复杂，但是仔细分析一下并不复杂，首先Skiplist的header指针指向一个头结点，这个头结点没有值，只记录level，其中level[0]就是最下一层，接着向上是L1、L2一直到L32，这个level数组的大小是另外管理的，最大值由`ZSKIPLIST_MAXLEVEL`定义，为32。
 
@@ -499,7 +511,8 @@ zskiplist就是跳表本身，其中有以下字段。
 
 插入过程：（引用https://www.jianshu.com/p/09c3b0835ba6）
 
-![Redis-Skiplist-Insert-Process](/images/Redis/Redis-Skiplist-Insert-Process.webp)
+![Redis-Skiplist-Insert-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Redis/Redis-Skiplist-Insert-Process.webp)
 
 流程如下：
 

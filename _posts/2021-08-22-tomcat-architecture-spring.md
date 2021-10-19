@@ -12,13 +12,15 @@ keywords: Spring, Tomcat
 
 Http是浏览器和服务器之间的数据传送协议，Http协议作为应用层协议，是基于TCP/IP协议来传递数据的，Http不涉及数据包的传输，主要规定了客户端和服务端之间的通信格式。下面是Http请求的流程图：
 
-<img src="/images/Tomcat/Tomcat-Http-Request-Process.png" alt="Tomcat-Http-Request-Process" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Http-Request-Process.png" alt="Tomcat-Http-Request-Process" style="zoom:50%;" />
 
 在用户发起请求时，浏览器首先会和服务器建立TCP连接（三次握手），之后会生成HTTP格式的数据包，通过TCP/IP协议发送数据到服务器，服务器解析HTTP格式的数据包并执行对应的请求，之后返回响应数据包到浏览器，浏览器解析数据包后呈现HTTP响应给用户。
 
 Tomcat在收到HTTP请求之后会将请求交给Servlet来进行进一步的处理。但是在交给具体的Servlet之前，Tomcat会负责将TCP请求转换为HTTP请求，并且适配请求，生成ServletRequest对象来描述请求信息交付给Servlet使用；当Servlet处理结束后，需要返回的数据以ServletResponse抽象的形式交付给Tomcat，Tomcat同样将其适配为Response，并生成HTTP数据包，通过TCP协议发送消息。下面这张图就是Tomcat具体处理HTTP请求的流程：
 
-<img src="/images/Tomcat/Tomcat-Tomcat-Handle-Http-Request-Process.png" alt="Tomcat-Tomcat-Handle-Http-Request-Process" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Tomcat-Handle-Http-Request-Process.png" alt="Tomcat-Tomcat-Handle-Http-Request-Process" style="zoom:50%;" />
 
 ## Tomcat整体架构
 
@@ -29,7 +31,8 @@ Tomcat实现的两大核心功能分别是：
 
 为了实现这两大功能，Tomcat设计了两个核心组件连接器（Connector）和容器（Container）来分别实现上述两大功能。连接器负责对外交流，容器负责内部处理。逻辑结构如下：
 
-<img src="/images/Tomcat/Tomcat-Core-Function-Arch.png" alt="Tomcat-Core-Function-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Core-Function-Arch.png" alt="Tomcat-Core-Function-Arch" style="zoom:50%;" />
 
 可以看到，Tomcat Server是唯一的，一个Server中可以有多个Service，一个Service中可以有多个Connector（目的是为了监听多个端口，实现多个网站的同时部署），但是每个Service中只能有一个Container。上面这个结构和Tomcat的配置文件server.xml是吻合的（Container这里实际上又细分为Engine、Host、Context和Wrapper）：
 
@@ -76,7 +79,8 @@ Tomcat中的连接器名为Coyote，是Tomcat服务器提供的供客户端访�
 
 Coyote封装了底层的网络通信（Socket请求及响应处理），为Catalina容器提供了统一的接口，使Catalina容器与具体的请求协议以及IO操作方式完全解耦。Coyote将Socket输入转换封装为Request对象，交由Catalina容器进行处理，处理请求完成后，Catalina通过Coyote提供的Response对象将结果写入输出流。要注意这里的Request和Response与Servlet没有任何关系，只是Coyote对网络请求与响应的抽象，而如果要转换成Servlet可以使用的ServletRequest以及ServletResponse，中间需要经过适配器进行适配。下面就是Coyote和Catalina交互的示意图：
 
-<img src="/images/Tomcat/Tomcat-Coyote-Catalina-Communication-Arch.png" alt="Tomcat-Coyote-Catalina-Communication-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Coyote-Catalina-Communication-Arch.png" alt="Tomcat-Coyote-Catalina-Communication-Arch" style="zoom:50%;" />
 
 由于Coyote的工作主要负责Socket的读写操作，以及将TCP请求适配为HTTP请求，所以就比如存在多种适配关系，例如IO操作中的BIO（已被移除）、NIO、AIO（NIO2）、APR（需要独立运行库，但是能大幅度提高性能）等；网络协议包括HTTP/1.1、HTTP/2、AJP（用于和Web服务器集成，以实现对静态资源的优化以及集群部署）。
 
@@ -86,7 +90,8 @@ Coyote封装了底层的网络通信（Socket请求及响应处理），为Catal
 
 传输层（Endpoint）：NIO	NIO2	APR
 
-<img src="/images/Tomcat/Tomcat-Coyote-Detail-Arch.png" alt="Tomcat-Coyote-Detail-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Coyote-Detail-Arch.png" alt="Tomcat-Coyote-Detail-Arch" style="zoom:50%;" />
 
 由于Endpoint和Processor有多种不同的组合方式，所以额外定义了一个ProtocolHandler来对其进行包装，比较常用的ProtocolHandler包括`Http11NioProtocal`、`Http11Nio2Protocal`、`Http11AprProtocal`等。ProtocalHandler输出的结果即Request类型对象，经过`CoyoteAdapter`的适配，最终转换为了可以被Catalina容器识别的ServletRequest对象。
 
@@ -113,17 +118,20 @@ Coyote协议接口，通过Endpoint和Processor，实现针对具体协议的处
 
 Tomcat 本质上就是一款 Servlet 容器， 因此Catalina 才是 Tomcat 的核心 ， 其他模块 都是为Catalina 提供支撑的。 比如 ： 通过Coyote 模块提供链接通信，Jasper 模块提供 JSP引擎，Naming 提供JNDI 服务，Juli 提供日志服务：
 
-<img src="/images/Tomcat/Tomcat-Catalina-Arch.png" alt="Tomcat-Catalina-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Catalina-Arch.png" alt="Tomcat-Catalina-Arch" style="zoom:50%;" />
 
 Catalina容器的主要组件如下：
 
-<img src="/images/Tomcat/Tomcat-Catalina-Total-Container-Arch.png" alt="Tomcat-Catalina-Total-Container-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Catalina-Total-Container-Arch.png" alt="Tomcat-Catalina-Total-Container-Arch" style="zoom:50%;" />
 
 如上图所示，Catalina负责管理Server，而Server表示着整个服务器。Server下面有多个服务Service，每个服务都包含着多个连接器组件Connector（Coyote 实现）和一个容器组件Container。在Tomcat 启动的时候，会初始化一个Catalina的实例。我们将Connector和Container合起来称为Service，这个Service也仅仅只是对二者进行一个包装，并没有任何实际的作用。
 
 Catalina内部设计了四种容器：Engine、Host、Context和Wrapper，Tomcat正是通过这种分层的架构，让Servlet容器具备了更好的灵活性。
 
-<img src="/images/Tomcat/Tomcat-Catalina-Total-Container-Arch.png" alt="Tomcat-Catalina-Total-Container-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Catalina-Total-Container-Arch.png" alt="Tomcat-Catalina-Total-Container-Arch" style="zoom:50%;" />
 
 各个组件的作用如下：
 
@@ -140,7 +148,8 @@ Catalina内部设计了四种容器：Engine、Host、Context和Wrapper，Tomcat
 
 Tomcat的类加载器模型是一种典型的破坏双亲委派模型的类加载器模型，它的破坏主要体现在对于每个Web应用而言，它们需要的类库版本可能并不一致（例如Web应用1需要Spring4.0，Web应用B需要Spring5.0），那么如果采用双亲委派模型，所有类都尝试由顶层加载，那么非常可能出现由于一个类已经存在（全限定名一致）而导致另一个版本的类无法被加载的问题。所以Tomcat的类加载器被设计为每个Web项目由自己的类加载器来加载所需的类库，Web项目间不共享，这就打破了原有的顶层父类加载的双亲委派模型了，下面来看具体的结构：
 
-<img src="/images/Tomcat/Tomcat-ClassLoader-Arch.png" alt="Tomcat-ClassLoader-Arch" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-ClassLoader-Arch.png" alt="Tomcat-ClassLoader-Arch" style="zoom:50%;" />
 
 可以看到，前三个类加载器和Java中的类加载器结构一致，目的就是为了加载依赖于Java语言的公共类库，这部分类库不应该在每个Web应用中都存储一个副本，这样会导致虚拟机内存的膨胀。后面的CommonClassLoader、CatalinaClassLoader、SharedClassLoader、WebappClassLoader、JasperLoader则是Tomcat定义的类加载器，它们分别加载不同路径下的类库：
 
@@ -158,7 +167,8 @@ Tomcat的类加载器模型是一种典型的破坏双亲委派模型的类加�
 
 上面是早期版本的Tomcat类加载机制，虽然是早期版本，但是仍然有很强的借鉴意义，而由于Tomcat目录结构的变化，整个类加载模型也有了一点小变化，但是这不是重点，重点是Tomcat破坏了双亲委派模型的原因。我们同样给出新的Tomcat类加载器架构图：
 
-<img src="/images/Tomcat/Tomcat-ClassLoader-New-Arch.png" alt="Tomcat-ClassLoader-New-Arch" style="zoom:80%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-ClassLoader-New-Arch.png" alt="Tomcat-ClassLoader-New-Arch" style="zoom:80%;" />
 
 **Bootstrap 引导类加载器 ：**加载JVM启动所需的类，以及标准扩展类（位于jre/lib/ext下），将JVM前三个类加载器概括到一起了。
 
@@ -176,7 +186,8 @@ Tomcat的类加载器模型是一种典型的破坏双亲委派模型的类加�
 
 Tomcat的初始化流程和它的父子层级关系接近一致，初始化的流程也是按照这个顺序进行的，由当前组件负责初始化它的子组件，最顶层的入口为Bootstrap类：
 
-![Tomcat-StartupAndInit-Process](/images/Tomcat/Tomcat-StartupAndInit-Process.png)
+![Tomcat-StartupAndInit-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-StartupAndInit-Process.png)
 
 Bootstrap首先构造Classloader，接着调用CatalinaClassloader加载和反射创建Catalina对象，接着Bootstrap调用load方法开始逐级加载：首先利用反射调用Catalina的load方法，Catalina首先创建唯一的Server对象实例，在创建前会读取server.xml文件并解析内容，根据配置内容来配置Server实例，配置结束后则调用Server的init方法。
 
@@ -190,7 +201,8 @@ Bootstrap首先构造Classloader，接着调用CatalinaClassloader加载和反�
 
 NioEndpint为了实现多路复用，内部包含三个组件，一个是Acceptor线程组用来接收请求，这个大家都一样；第二个是Poller线程组，用于监听 Socket 事件，当 Socket 可读或可写时，将 Socket 封装一下添加到 worker 线程池的任务队列中；最后一个就是Worker线程组。用于对请求进行处理，包括分析请求报文并创建 Request 对象，调用容器的 pipeline 进行处理（也就是上面架构中说过的Processor）。具体的图示为：
 
-![Tomcat-NioEndpoint-Handle-Process](/images/Tomcat/Tomcat-NioEndpoint-Handle-Process.jpeg)
+![Tomcat-NioEndpoint-Handle-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-NioEndpoint-Handle-Process.jpeg)
 
 所以在Init阶段，NioEndpoint会初始化Acceptor、Poller以及Worker（即前面说的Executor），启动顺序是Poller、Executor、Acceptor。Acceptor独立在另一个线程中启动，启动后就开始进行监听，也即监听线程会阻塞在ServerSocketChannel的accept方法处。
 
@@ -200,19 +212,22 @@ Tomcat的初始化并不是重点，下面我们结合源码和Spring来看一�
 
 为了实现将请求交给具体的Servlet处理，Tomcat设计了Mapper组件，其类似于一个多层次的Map，保存了访问路径到容器组件之间的映射关系，当一个请求到来时，Mapper通过解析请求域名和路径，再到自己保存的Map中去寻找就能找到对应的Servlet了：
 
-![Tomcat-Request-Process](/images/Tomcat/Tomcat-Request-Process.png)
+![Tomcat-Request-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Request-Process.png)
 
 如果使用的是Spring的Controller，那实际上具体的请求是交给DispatcherServlet进行处理的，但是DispatcherServlet处理的请求范围需要在web.xml中的servlet-mapping中配置，这个配置就是上图中Wrapper匹配的路径了。
 
 上面的这张图从URL请求的角度分析了Http请求到达Servlet的流程，下面从架构的流程上来分析一下：
 
-![Tomcat-Request-Handle-Process](/images/Tomcat/Tomcat-Request-Handle-Process.png)
+![Tomcat-Request-Handle-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Request-Handle-Process.png)
 
 #### Acceptor
 
 我们从Tomcat初始化流程中的启动流程知道，请求接收实际上发生在Acceptor中的run方法里（实现了Runnable接口，实际由对应Endpoint创建新线程，在线程中阻塞等待）。先来看Acceptor处理请求的时序图：
 
-![Tomcat-Acceptor-NioEndpoint-Handle-Process](/images/Tomcat/Tomcat-Acceptor-NioEndpoint-Handle-Process.png)
+![Tomcat-Acceptor-NioEndpoint-Handle-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Acceptor-NioEndpoint-Handle-Process.png)
 
 当Acceptor收到请求时，Acceptor所在线程就不再阻塞，ServerSocket返回一个ServerSocketChannel对象，接着Acceptor会调用Endpoint中的`setSocketOptions`方法来通知对应的Endpoint接收和处理数据，以NioEndpoint为例，`setSocketOptions`会将Socket封装到NioChannel中，并注册到Poller中，由于启动过程中启动了不止一个Poller，所以这里注册的过程采用的是轮询的方法，公平地分配给每一个Poller。而Poller收到注册请求后，会构建流到达事件，并将其加入到给Poller的PollerEvent队列中，到此为止Acceptor的任务就完成了。此时如果Acceptor没有收到停止指令，那么就会继续阻塞，等待下一个请求到来。
 
@@ -220,7 +235,8 @@ Tomcat的初始化并不是重点，下面我们结合源码和Spring来看一�
 
 Poller执行的时序图如下：
 
-![Tomcat-Poller-Handle-Request-Process](/images/Tomcat/Tomcat-Poller-Handle-Request-Process.png)
+![Tomcat-Poller-Handle-Request-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Poller-Handle-Request-Process.png)
 
 1. Poller的启动在NioEndpoint中，Poller自身实现了Runnable接口，而在NioEndpoint中为每个Poller新建了一个线程来执行。Poller线程会首先会检查当前PollerEvent队列中是否存在未处理的事件，如果存在则调用events方法进行处理，如果不存在则会调用内部Selector的select方法进行阻塞，直到Selector中有可用Channel时才会从阻塞中恢复（所有Poller共用一个Selector，其实现类是 sun.nio.ch.EPollSelectorImpl）。当存在事件时会调用events方法进行处理。
 
@@ -238,7 +254,8 @@ Poller执行的时序图如下：
 
 #### Worker
 
-![Tomcat-Worker-Handle-Request](/images/Tomcat/Tomcat-Worker-Handle-Request.jpeg)
+![Tomcat-Worker-Handle-Request](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Worker-Handle-Request.jpeg)
 
 这里的Executor实际也在NioEndpoint中创建，类型是ThreadPoolExecutor，内部是以一个LinkedBlockingQueue的形式存储的。ThreadPoolExecutor的原理这里就不解释了，内部维护了一个WorkerQueuu即工作队列，工作队列中的每个Worker启动后由于没有任务则在runWorker方法中阻塞。Worker实际执行的就是Poller向线程池提交的SocketProcessor任务：
 
@@ -252,7 +269,8 @@ Poller执行的时序图如下：
 
 在经过上面这些过程后，Coyote的全部工作就完成了，它负责监听连接请求（Acceptor），监听IO完成情况（Poller）、将TCP数据封装为HTTP数据并转换为容器可以识别的Request（Worker），最后交给Catalina容器的就是这个已经封装好的Request对象。这个传递过程是通过管道Pipeline来完成的，实现类为`StandardPipeline`，而Container内部每个组件包括Engine、Host、Context、Wrapper之间都是使用Pipeline来连接的：
 
-![Tomcat-Container-Request-Process](/images/Tomcat/Tomcat-Container-Request-Process.jpeg)
+![Tomcat-Container-Request-Process](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Container-Request-Process.jpeg)
 
 从时序图可以看出这就是一级一级的向下执行，因为在CoyoteAdapter中说过，Mapper已经提前被封装在Request对象中了，所以这里只要获取就好了，然后调用管道流，调用方法即可：
 
@@ -278,7 +296,8 @@ Poller执行的时序图如下：
 
 之所以定义了Pipeline和Valve是为了方便我们对每一级容器做一些定制的处理，也为了将中间的调用逻辑和容器本身解耦合，交给Valve来完成具体的业务逻辑。加上Pipeline和Valve后的容器架构图如下：
 
-![Tomcat-Container-With-PipelineAndValve-Arch](/images/Tomcat/Tomcat-Container-With-PipelineAndValve-Arch.png)
+![Tomcat-Container-With-PipelineAndValve-Arch](
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Tomcat/Tomcat-Container-With-PipelineAndValve-Arch.png)
 
 从Container的时序图也可以看出来，CoyoteAdapter将ServletRequest包装好后通过StandardPipeline交给StandardEngine的管道，具体逻辑由StandardEngineValve进行处理，并由StandardEngineValve交给下一级容器处理，最后，请求在StandardWrapperVavle中构造并执行过滤器链，然后交给具体的Servlet执行业务逻辑。
 

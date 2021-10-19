@@ -426,7 +426,8 @@ Inno DB数据更新操作的顺序：
 
    RedoLog分为两个部分：内存中的LogBuffer、磁盘中的RedoLog文件：
 
-   ![](https://images2018.cnblogs.com/blog/733013/201805/733013-20180508101949424-938931340.png)
+   ![](https:/
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image2018.cnblogs.com/blog/733013/201805/733013-20180508101949424-938931340.png)
 
    但是由于操作系统本身存在缓存的特性，并且MySQL对日志文件的读写没有启用O_DIRECT标志，导致其会使用系统缓存，所以当数据写入系统而没有刷新时，它只停留在缓存中等待操作系统将其写入文件，如果此时操作系统挂了，那数据就会丢失。所以MySQL定义了一下三个刷入策略，它们由`innodb_flush_log_at_trx_commit`变量来控制：
 
@@ -436,13 +437,15 @@ Inno DB数据更新操作的顺序：
 
    这里三者的示意图如下：
 
-   ![](https://images2018.cnblogs.com/blog/733013/201805/733013-20180508104623183-690986409.png)
+   ![](https:/
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image2018.cnblogs.com/blog/733013/201805/733013-20180508104623183-690986409.png)
 
 可以看出，当设置为0时，会先写入LogBuffer，再刷入磁盘（这里解释一下fsync，它会将缓冲区的数据理解写入磁盘，并等待写入完毕后才会返回），它的优点就是相比默认的1快，因为不需要马上进行磁盘IO，而是由后台线程每隔1秒进行磁盘IO，缺点就是如果数据库宕机，那么数据会丢失；默认设置为1，对于所有RedoLog的修改，都会立即写入磁盘；当将其设置为2时，会立即写入缓冲区，然后每隔1秒写入磁盘，它和0的区别就是，当设置为0时，如果出现数据库宕机、进程挂、操作系统挂，那么数据会丢失，但是设置为2时，只有操作系统挂了才会导致数据丢失，而且只会丢失1秒的数据，安全性比0级高一些。
 
 InnoDB存储引擎中，RedoLog以块为单位进行存储的，每个块占512字节，这称为Redo Log Block。所以不管是log buffer中还是os buffer中以及redo log file on disk中，都是这样以512字节的块存储的。每个Redo Log Block由3部分组成：**日志块头、日志块尾和日志主体**。其中日志块头占用12字节，日志块尾占用8字节，所以每个redo log block的日志主体部分只有512-12-8=492字节：
 
-![](https://images2018.cnblogs.com/blog/733013/201805/733013-20180508182701906-2079813573.png)
+![](https:/
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image2018.cnblogs.com/blog/733013/201805/733013-20180508182701906-2079813573.png)
 
 因为redo log记录的是数据页的变化，当一个数据页产生的变化需要使用超过492字节()的redo log来记录，那么就会使用多个redo log block来记录该数据页的变化。（注意这里并不是把整个数据页都复制一份，只是记录哪个数据页的哪一块数据被改过了）
 
@@ -455,7 +458,8 @@ InnoDB存储引擎中，RedoLog以块为单位进行存储的，每个块占512�
 
 将上面的LogBlock和RedoLog Buffer整合一下就是：
 
-![](https://images2018.cnblogs.com/blog/733013/201805/733013-20180508182756285-1761418702.png)
+![](https:/
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image2018.cnblogs.com/blog/733013/201805/733013-20180508182756285-1761418702.png)
 
 RedoLog可以以组的形式保存（默认是多个），两个循环写，一个满了接着写下一个文件，如果两个都满了那么强制要求刷回一部分脏页后接着循环写。但是RedoLog组的大小和每个日志文件的大小不是越大越好，如果大小越大，那么也就意味着出错时恢复的时间也越长，如果太小，那么会导致频繁的IO（虽然是顺序IO）。
 
@@ -500,7 +504,8 @@ InnoDB中的一页为16KB，操作系统的一页为4KB，所以将InnoDB的页�
 
 示意图如下：
 
-<img src="/images/MySQL/MySQL-DWL-Problem.png" alt="MySQL-DWL-Problem" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/MySQL/MySQL-DWL-Problem.png" alt="MySQL-DWL-Problem" style="zoom:50%;" />
 
 如果缺少DWB，那么写入表空间的时候不仅原始数据会受到破坏，而且RedoLog也无法删除，会造成一系列的问题。
 
@@ -518,7 +523,8 @@ MySQL内部数据是以页的形式读入内存的，那对于某些需要索引
 
 即Innodb存储引擎会监控对表上二级索引的查找，如果发现某二级索引被频繁访问，二级索引成为热数据，建立哈希索引可以带来速度的提升。经常访问的二级索引数据会自动被生成到hash索引里面去(最近连续被访问三次的数据)，自适应哈希索引通过缓冲池的B+树构造而来，因此建立的速度很快。结构图：
 
-![](https://images2017.cnblogs.com/blog/1113510/201708/1113510-20170830183917780-959160821.png)
+![](https:/
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image2017.cnblogs.com/blog/1113510/201708/1113510-20170830183917780-959160821.png)
 
 可以看出建立在B+树索引上的二级哈希索引肯定是可以加快查找速度的，但是只有在非常极端的场景下，哈希索引才能起作用，比如说非范围查找（哈希表的无序特性使其难以实现范围查找）、少更新（两级缓存需要双倍的更新时间），同时由于引入了新的索引，索引页以及数据页会占用更多的BufferPool空间。
 
@@ -577,7 +583,8 @@ Redis内存空间满时的清除策略：
 
 一致性哈希则将所有数据对2的32次幂取模，我们将2的32次幂看作一个圆环，将服务器的IP地址对其取模就可以将服务器映射为圆环上的一个点。当需要存取缓存信息时，只要将对应的键也对2的32次幂取模，然后**向后找到**圆环离当前这个点最近的一台服务器来存取数据即可。
 
-<img src="https://images2015.cnblogs.com/blog/498077/201608/498077-20160822172408386-366341651.png" style="zoom:67%;" />
+<img src="https:/
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image2015.cnblogs.com/blog/498077/201608/498077-20160822172408386-366341651.png" style="zoom:67%;" />
 
 问题：有可能造成严重的倾斜问题，即大量的缓存信息都被存入了同一个服务器结点。
 
@@ -822,13 +829,15 @@ Hystrix：
 
 对于32位系统，每个应用程序可以使用的虚拟内存空间都是4G（无论是否有这么大的物理内存，虚拟内存到物理内存的映射由操作系统完成，如果内存不够了，那么会由操作系统抛出异常），对于32位系统，其虚拟内存的0\~3G的内存地址空间均为用户地址空间，3G\~4G的内存地址空间为内核地址空间，如下图：
 
-<img src="/images/Linux/Linux 32位虚拟内存地址结构.png" alt="Linux 32位虚拟内存地址结构" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Linux/Linux 32位虚拟内存地址结构.png" alt="Linux 32位虚拟内存地址结构" style="zoom:50%;" />
 
 虚拟内存中，用户地址空间是各个进程独享的，两个进程使用同样的虚拟内存地址互不影响。内核地址空间是各个进程共享的，两个进程不能使用同样的虚拟内存地址，例如每个进程都存在内核栈，内核栈存储在内核地址空间中，对于进程1假设它占用了0x4000 - 0x6000的内存的地址空间，那么进程2的内核栈就不能占用同一个内存地址了，它的内核栈就要从0x6000开始向上生长。
 
 用户地址空间可以分为以下几个部分：
 
-<img src="/images/Linux/Linux 用户地址空间.png" alt="Linux 用户地址空间" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Linux/Linux 用户地址空间.png" alt="Linux 用户地址空间" style="zoom:50%;" />
 
 可以看到，对于用户地址空间而言，它包含了代码段、数据段、BSS段（未初始化的数据）以及堆、栈和内存映射信息（用于将磁盘文件直接映射到内存中，是一种高效IO方式，例如libc.so等动态库都是直接加入mmap段）
 
@@ -836,7 +845,8 @@ Hystrix：
 
 Linux物理内存分区的结构如下：
 
-<img src="/images/Linux/Linux物理内存结构.png" alt="Linux物理内存结构" style="zoom:50%;" />
+<img src="
+https://evanblog.oss-cn-shanghai.aliyuncs.com/image/Linux/Linux物理内存结构.png" alt="Linux物理内存结构" style="zoom:50%;" />
 
 对于32位系统且拥有4G物理内存的情况下，一般将低16MB作为DMA区，供DMA设备直接访问；16MB\~896MB作为NORMAL区，建立从逻辑内存到物理内存的线性映射（也就是内核通过加上一个偏移量就可以直接访问到这个内存区域）；而大于896MB的区域均为高端内存区域，如果要使用这些内存区域，那么必须建立临时映射来访问。当然NORMAL和DMA空间的约束并不是固定的，只是一种约束而已，当NORMAL区耗尽时是可以占用DMA区的。
 
